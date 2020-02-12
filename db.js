@@ -62,6 +62,12 @@ var DB = {
       firebase.database().ref().child('posts').on('value', function (snapshot) {
         cb(snapshot.val());
       });
+    },
+
+    setUserSection: function(uid, sectionValue, cb){
+      var updates = {};
+      updates['section'] = sectionValue;
+      firebase.database().ref('/users/'+uid).update(updates, cb);
     }
 }
 

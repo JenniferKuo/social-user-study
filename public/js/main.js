@@ -1,5 +1,6 @@
 // 抓取網頁元件
 var uid;
+var section;
 
 $(document).ready( function() {
     var messageForm = $('#message-form');
@@ -7,8 +8,9 @@ $(document).ready( function() {
     uid = $('#id-input').text();
     var submitBtn = $('#submit-btn');
 
-    showAllPost(document.getElementById('post-container'));
-      
+    // 取得該user是分類在哪個區
+    getUserSection();
+
     window.addEventListener('load', function() {
 
         // 按下發表留言按鈕

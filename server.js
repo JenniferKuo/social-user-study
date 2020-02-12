@@ -1,3 +1,4 @@
+const THRESHOLD = 4;
 var express = require('express');
 var session = require('express-session')
 var bodyParser = require('body-parser')
@@ -16,7 +17,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json());
 
 // Access Cross Origin Resource Sharing
-app.use(cors());
+// app.use(cors());
 
 app.use(express.static('public'));
 
@@ -132,12 +133,16 @@ app.post('/login', function(req, res) {
         req.session.isAdmin = false;
 
     // 更新firebase的user資訊
-    var user = {'username': username, 'isAdmin': req.session.isAdmin, 'like': 0, 'dislike': 0, 'postNumber': 0};
+    var user = {'username': username, 'isAdmin': req.session.isAdmin};
     db.login(user, function(data){
         console.log(data);
         if(data != null)
             // 跳轉回主頁
-            res.redirect('/');
+            if(req.session.isAdmin)
+                res.redirect('/');
+            // 去問卷頁
+            else
+                res.redirect('/form');
         else
             res.render('login',{
                 loginFailed: true
@@ -146,16 +151,32 @@ app.post('/login', function(req, res) {
 })
 
 app.post('/sendResult', function(req, res) {
-    var result = req.body.result;
-    // TODO: 計算問卷結果
+    var score = req.body.score;
+    var section;
+    console.log(score);
 
-    res.redirect('/');
+    // TODO: 計算問卷結果
+    if(score < THRESHOLD){
+        section = "A";
+    }else{
+        section = "B";
+    }
+    
+    // TODO: 更改用戶資料
+    db.setUserSection(req.session.username, section, function(err){
+        if(err){
+            
+        }else{
+            console.log(req.session.username + "update finished");
+            res.send({status: "success", score: score, section: section});
+        }
+    });
 })
 
 // 登出，清除 session
 app.get('/logout', function(req, res) {
   req.session.destroy();
-  res.redirect('/login')
+  res.redirect('/login');
 })
 
 app.listen(3000, function () {

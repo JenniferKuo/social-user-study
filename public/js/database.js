@@ -15,8 +15,10 @@ firebase.initializeApp(firebaseConfig);
 
 function writeNewPost(username, content) {
   // Get a key for a new Post.
-  var newPostKey = firebase.database().ref().child('posts').push().key;
+  var newPostKey = firebase.database().ref().child('posts/' + section).push().key;
 
+  // TODO: 增加AB區塊
+  
   // A post entry.
   var postData = {
     author: username,
@@ -30,14 +32,22 @@ function writeNewPost(username, content) {
   };
   // Write the new post's data simultaneously in the posts list and the user's post list.
   var updates = {};
-  updates['/posts/' + newPostKey] = postData;
+  updates['/posts/' + '/' + section + '/' + newPostKey] = postData;
   console.log(postData);
   return firebase.database().ref().update(updates);
 }
 
+function getUserSection(){
+  firebase.database().ref('/users/' + uid).once('value', function(snapshot){
+    section = snapshot.val().section;
+    console.log(section);
+    showAllPost(document.getElementById('post-container'));
+  });
+}
+
 function showAllPost(containerElement){
-    var postsRef = firebase.database().ref('posts');
-    // TODO: 只顯示與自己屬性相同的post
+    // TODO: 新增admin的刪除按鈕
+    var postsRef = firebase.database().ref('posts/' + section);
     // posts 欄位如果新增
     postsRef.on('child_added', function(data) {
       console.log("child_added");
@@ -89,14 +99,13 @@ function createPostElement(postId, content, author, like, dislike, createTime) {
 
 function toggleLike(postId, likeValue) {
   var post;
-  var postRef = firebase.database().ref('/posts/' + postId);
+  var postRef = firebase.database().ref('/posts/' + '/' + section + '/' + postId);
   postRef.once('value', function(snapshot) {
     if(snapshot){
       post = snapshot.val();
       switch(likeValue) {
         // 如果是按dislike
         case -1:
-          
           // 如果還沒按過
           if (post.dislikeUsers && post.dislikeUsers[uid] == undefined) { 
             post.dislike++;
@@ -133,6 +142,9 @@ function toggleLike(postId, likeValue) {
       postRef.update(post);
     }
 
-  });
-  
+  }); 
 }
+
+// TODO: 新增管理介面可新增/刪除user
+// TODO: 增加隨時更新user狀態/更新post/like數
+// TODO: 增加回覆特定某人功能
