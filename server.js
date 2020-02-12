@@ -1,6 +1,7 @@
 var express = require('express');
 var session = require('express-session')
 var bodyParser = require('body-parser')
+var cors = require('cors')
 var db = require('./db');
 
 var app = express();
@@ -12,6 +13,10 @@ app.use(session({
 
 // 有了這個才能透過 req.body 取東西
 app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json());
+
+// Access Cross Origin Resource Sharing
+app.use(cors());
 
 app.use(express.static('public'));
 
@@ -19,15 +24,13 @@ app.set('view engine', 'ejs');
 
 // 首頁，直接輸出所有留言
 app.get('/', function (req, res) {
-    console.log(req.session);
     // 試著看看 session 裡面有沒有 username, 沒有就轉至登入頁面
     if(req.session.username == undefined){
         res.redirect('/login');
     }else{
         // 判斷是否是管理員
         var username = req.session.username;
-        console.log(username);
-        var isAdmin = false;
+        var isAdmin = req.session.username;
 
         if (username == "admin") {
             isAdmin = true;
@@ -72,9 +75,50 @@ app.post('/posts', function (req, res) {
   res.redirect('/');
 })
 
+// 增加使用者頁面
+app.get('/addUser', function (req, res) {
+    res.render('addUser');
+})
+
+// 新增使用者
+app.post('/addUser', function(req, res) {
+    var username = req.body.username;
+    // 更新firebase的user資訊
+    var user = {'username': username, 'isAdmin': false, 'like': 0, 'dislike': 0, 'postNumber': 0};
+    db.addUser(user, function(data){
+        console.log(data);
+        res.send({
+            status: 'SUCCESS'
+        });
+    });
+})
+
 // 輸出登入頁面
 app.get('/login', function (req, res) {
-  res.render('login');
+    res.render('login',{
+        loginFailed: false
+    });
+})
+
+// 輸出問卷頁面
+app.get('/form', function (req, res) {
+    // 試著看看 session 裡面有沒有 username, 沒有就轉至登入頁面
+    if(req.session.username == undefined){
+        res.redirect('/login');
+    }else{
+        // 判斷是否是管理員
+        var username = req.session.username;
+        var isAdmin = req.session.isAdmin;
+
+        if (username == "admin") {
+            isAdmin = true;
+        }
+
+        res.render('form',{
+            username: username,
+            isAdmin: isAdmin
+        });
+    }
 })
 
 // 登入，將uid存入session
@@ -89,11 +133,23 @@ app.post('/login', function(req, res) {
 
     // 更新firebase的user資訊
     var user = {'username': username, 'isAdmin': req.session.isAdmin, 'like': 0, 'dislike': 0, 'postNumber': 0};
-    db.login(user, function(err){
-        console.log(err);
-        // 跳轉回主頁
-        res.redirect('/');
+    db.login(user, function(data){
+        console.log(data);
+        if(data != null)
+            // 跳轉回主頁
+            res.redirect('/');
+        else
+            res.render('login',{
+                loginFailed: true
+            });
     });
+})
+
+app.post('/sendResult', function(req, res) {
+    var result = req.body.result;
+    // TODO: 計算問卷結果
+
+    res.redirect('/');
 })
 
 // 登出，清除 session
