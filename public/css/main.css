@@ -1,0 +1,27 @@
+body{
+    font-family: 'Noto Sans TC', sans-serif;
+}
+.card{
+    margin: 10px 0px;
+}
+
+.toast{
+    width: 300px;
+}
+
+.active{
+    color: Dodgerblue;
+}
+
+.post .good-count {
+    color: #444;
+    padding: 0 10px 0 5px;
+    display: inline-block;
+    position: relative;
+}
+.post .bad-count {
+    color: #444;
+    padding: 0 10px 0 5px;
+    display: inline-block;
+    position: relative;
+}
