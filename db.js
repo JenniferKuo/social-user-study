@@ -19,12 +19,12 @@ firebase.initializeApp(firebaseConfig);
 
 var DB = {
     login: function(user, cb){
-      firebase.database().ref('/users/' + user.username).on('value', function(snapshot){
+      firebase.database().ref('/users/' + user.username).once('value').then(function(snapshot){
         cb(snapshot.val());
-      })
+      });
     },
     addUser: function(user, cb){
-      cb(firebase.database().ref('/users/' + user.username).update(user));
+      firebase.database().ref('/users/' + user.username).update(user, cb);
       console.log(user);
     },
     addPost: function (post) {
