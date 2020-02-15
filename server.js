@@ -31,12 +31,12 @@ app.get('/', function (req, res) {
     }else{
         // 判斷是否是管理員
         var username = req.session.username;
-        var isAdmin = req.session.username;
+        var isAdmin = req.session.isAdmin;
 
         if (username == "admin") {
             isAdmin = true;
         }
-
+        console.log(username +" " +isAdmin);
         res.render('forum',{
             username: username,
             isAdmin: isAdmin
@@ -85,7 +85,7 @@ app.get('/addUser', function (req, res) {
 app.post('/addUser', function(req, res) {
     var username = req.body.username;
     // 更新firebase的user資訊
-    var user = {'username': username, 'isAdmin': false, 'like': 0, 'dislike': 0, 'postNumber': 0};
+    var user = {'username': username, 'isAdmin': false, 'like': 0, 'dislike': 0, 'postNumber': 0, 'isActive': true};
     db.addUser(user, function(data){
         console.log(data);
         res.send({

@@ -1,6 +1,8 @@
 // 抓取網頁元件
 var uid;
 var section;
+var isActive;   
+var isAdmin;
 
 $(document).ready( function() {
     var messageForm = $('#message-form');
@@ -9,7 +11,7 @@ $(document).ready( function() {
     var submitBtn = $('#submit-btn');
 
     // 取得該user是分類在哪個區
-    getUserSection();
+    getUserData();
 
     window.addEventListener('load', function() {
 
@@ -33,4 +35,38 @@ $(document).ready( function() {
             }
         });
     });
+
+        // 顯示使用者列表按鈕
+        // $('#userPanelBtn').on("click",showUserPanel());
+
+        // 靜音按鈕
+        $('.mute-btn').click(function(){
+            console.log($(this).css("color"));
+            if($(this).css("color") == "dodgerblue"){
+                $(this).css("color", "lightgrey");
+            }else{
+                $(this).css("color", "dodgerblue");
+            }
+        });
+    
+        // 允許發言按鈕
+        $('.volume-btn').click(function(){
+            console.log($(this).css("color"));
+            if($(this).css("color") == "dodgerblue"){
+                $(this).css("color", "lightgrey");
+            }else{
+                $(this).css("color", "dodgerblue");
+            }
+        });
+
 });
+
+function disablePost(){
+    document.getElementById("disableArea").appendChild(document.getElementById("message-form"));
+    document.getElementById("message-input").innerHTML = "您已被暫時禁止發言";
+}
+
+function enablePost(){
+    document.getElementsByClassName('bg-white')[0].appendChild(document.getElementById("message-form"));
+    document.getElementById("message-input").innerHTML = "";
+}

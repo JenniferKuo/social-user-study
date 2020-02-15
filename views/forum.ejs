@@ -30,11 +30,37 @@
           <% } %>
         </li>
       </ul>
+      <% if (isAdmin) { %> 
+      <ul class="navbar-nav mr-0">
+        </li>
+          <a class="nav-link" id="userPanelBtn" href="#">User List</a>
+        </li>
+      </ul>
+      <% } %>
     </div>
   </nav>
+  <!-- 管理員則顯示側邊欄 -->
+  <% if (isAdmin) { %> 
+    <nav id="userPanel" class="col-md-2 d-none d-md-block bg-light sidebar small">
+      <div class="sidebar-sticky">
+        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+          <span>Add User</span>
+          <a class="d-flex align-items-center text-muted" href="#" aria-label="Add a new report">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus-circle"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+          </a>
+        </h6>
+        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+          <span>Current Users</span>
+        </h6>
+        <ul class="nav flex-column mb-2" id="userList">
+        </ul>
+      </div>
+    </nav>
+  <% } %>
   <div class="container">
     <!-- 發表留言區塊 -->
     <div class="my-3 p-3 bg-white rounded shadow-sm">
+      <fieldset id="disableArea" disabled></fieldset>
       <form id="message-form" action="#">
         <div class="form-group">
           <h5 class="border-bottom border-gray pb-2 mb-0">發表留言</h5>
