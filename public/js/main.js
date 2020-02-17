@@ -1,6 +1,6 @@
 // 抓取網頁元件
-var uid;
-var section;
+var uid = "";
+var section = "";
 var isActive;   
 var isAdmin;
 
@@ -11,7 +11,7 @@ $(document).ready( function() {
     var submitBtn = $('#submit-btn');
 
     // 取得該user是分類在哪個區
-    getUserData();
+    initialUserData();
     // 隱藏回覆某人區塊
     $('#reply-container').hide();
 

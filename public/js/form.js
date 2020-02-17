@@ -31,6 +31,7 @@ function showQuestions(questions, quizContainer){
         options = [];
         // for each available option to this question...
         for(score in questions[i].options){
+            // TODO: 打亂選項
             options.push(
                 '<div class="form-check">'
                     + '<input class="form-check-input" type="radio" name="question'+i+'" value='+ score + '>'

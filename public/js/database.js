@@ -33,42 +33,68 @@ function writeNewPost(username, content, replyTo, replyContent) {
   // Write the new post's data simultaneously in the posts list and the user's post list.
   var updates = {};
   updates['/posts/' + '/' + section + '/' + newPostKey] = postData;
-  console.log(postData);
+
+  // 更新自己的貼文總數
+  personalData['postNumber'] = personalData['postNumber'] + 1;
+  uploadPersonalData(uid);
+
   return firebase.database().ref().update(updates);
 }
 
-function getUserData(){
-  // 當當前user欄位產生變化時
+var personalData = {};
+
+function initialUserData(){
+  // 抓取目前用戶資料
   firebase.database().ref('/users/' + uid).on('value', function(snapshot){
-    section = snapshot.val().section;
-    isActive = snapshot.val().isActive;
+    personalData = snapshot.val();
     isAdmin = snapshot.val().isAdmin;
-    // 顯示貼文列表
-    showAllPost(document.getElementById('post-container'));
-    // 根據目前狀態是否可發言來顯示發言區塊
-    isActive ? enablePost() : disablePost();
-    // 如果是管理員，抓取所有user的資料
-    if(isAdmin){
-      console.log("admin");
-      showAllUsers(document.getElementById('userList'));
+    console.log(section);
+    console.log(snapshot.val().section);
+    // 如果分區變了，顯示貼文列表
+    if(section != snapshot.val().section){
+      section = snapshot.val().section;
+      showAllPost(document.getElementById('post-container'));
+      // TODO: fix bug 別的區域的用戶發文會顯示出來
+      // 如果是管理員
+      if(isAdmin){
+        // 顯示用戶列表
+        showAllUsers(document.getElementById('userList'));
+      }
     }
+    if(isActive != snapshot.val().isActive){
+      // 根據目前狀態是否可發言來顯示發言區塊
+      isActive = snapshot.val().isActive;
+      isActive ? enablePost() : disablePost();
+    }
+  });
+
+  // 抓取用戶資料
+  updateUsersTotalData();
+}
+
+function uploadPersonalData(uid){
+  firebase.database().ref('/users/' + uid).update(personalData);
+}
+
+function uploadUsersTotalData(){
+  firebase.database().ref('/users/').update(usersTotalData).then(function(){
+    console.log("send");
+    console.log(usersTotalData);
   });
 }
 
-
 function showAllUsers(containerElement){
   console.log("showAllUsers");
-  var usersRef = firebase.database().ref('users');
+  var usersRef = firebase.database().ref('users').orderByChild('like');
   var secondContainer = document.getElementById("otherUserList");
   // 先清空列表內容
   $('#userList').empty();
   $('#otherUserList').empty();
+  // usersRef.off();
 
   // users 欄位如果新增
   usersRef.on('child_added', function(data) {
-    
     console.log("child_added");
-    // TODO: fix bug
     if($('#' + data.val().username).length)
       return;
     // 只顯示不是admin 和這一分區的帳號
@@ -101,7 +127,6 @@ function showAllUsers(containerElement){
   });
   // users欄位如果有被移除
   usersRef.on('child_removed', function(data) {
-    // TODO: fix bug
     console.log("child_removed");
     if($('#' + data.key).length){
       var userElement = document.getElementById(data.key);
@@ -139,12 +164,14 @@ function createUserElement(uid, isActive) {
 function showAllPost(containerElement){
     // TODO: 新增admin的刪除按鈕
     var postsRef = firebase.database().ref('posts/' + section);
+    postsRef.off();
 
     // 先清空留言列表
     $('#post-container').empty();
 
     // posts 欄位如果新增
     postsRef.on('child_added', function(data) {
+      console.log("post added");
       var author = data.val().author || '匿名';
       // 把新貼文的html元素插入再DIV中最新一個child之前
       containerElement.insertBefore(createPostElement(data.key, data.val().replyTo, data.val().replyContent, data.val().content, author, data.val().like, data.val().dislike, data.val().createTime), 
@@ -152,18 +179,39 @@ function showAllPost(containerElement){
     });
     // posts欄位內容如果更新
     postsRef.on('child_changed', function(data) {
+      console.log("post changed");
       var postElement = document.getElementById(data.key);
       postElement.getElementsByClassName('author')[0].innerHTML = "@" + data.val().author;
       postElement.getElementsByClassName('content')[0].innerHTML = data.val().content;
       postElement.getElementsByClassName('good-count')[0].innerHTML = data.val().like;
       postElement.getElementsByClassName('bad-count')[0].innerHTML = data.val().dislike;
       postElement.getElementsByClassName('createTime')[0].innerHTML = data.val().createTime;
+
+      // 更新user的like數
+      console.log(data.child("likeUsers").numChildren() - 1);
+      usersTotalData[data.val().author].like = data.child("likeUsers").numChildren() - 1;
+      // 更新user的dislike數
+      console.log(data.child("dislikeUsers").numChildren() - 1);
+      usersTotalData[data.val().author].dislike = data.child("dislikeUsers").numChildren() - 1;
+      uploadUsersTotalData();
     });
     // posts欄位如果有被移除貼文
     postsRef.on('child_removed', function(data) {
       var postElement = document.getElementById(data.key);
       postElement.parentElement.removeChild(postElement);
+      // TODO: 如果貼文數有變化，更新該user的貼文統計資料
     });
+}
+
+var usersTotalData = {};
+function updateUsersTotalData(){
+  // likeUsers, dislikeUsers, replyTo
+  var usersRef = firebase.database().ref('users');
+  usersRef.once('value', function(snapshot){
+    usersTotalData = snapshot.val();
+    console.log("get");
+    console.log(usersTotalData);
+  });
 }
 
 // 回傳一個貼文的html
@@ -182,14 +230,26 @@ function createPostElement(postId, replyTo, replyContent, content, author, like,
     '<strong class="author d-block text-primary small">@' + author + '</strong>' +
     replyHtml +
     '<p class="content text-body">' + content + '</p>' +
-    '<p class="text-muted small">留言時間: <span class="createTime">' + createTime + '</span></p>' +
-    '<div class="btn-group">' +
+    '<p class="text-muted small">留言時間: <span class="createTime">' + createTime + '</span></p>';
+  
+  if(author != uid){
+    html += '<div class="btn-group">' +
       '<button type="button" class="btn btn-light like" onclick="toggleLike(\'' + postId + '\', 1)"><i class="fas fa-thumbs-up" color="blue"></i><div class="good-count">' + like + '</div></button>' +
       '<button type="button" class="btn btn-light dislike" onclick = "toggleLike(\'' + postId + '\', -1)"><i class="fas fa-thumbs-down"></i><div class="bad-count">' + dislike + '</div></button>' +
     '</div>' +
     '<button type="button" class="btn btn-link" onclick="replyPost(\''+ postId +'\')">回覆</button>' +
   '</div>' +
-'</div>';
+  '</div>';
+  }else{
+    html += '<div class="btn-group">' +
+      '<button disabled type="button" class="btn btn-light like" onclick="toggleLike(\'' + postId + '\', 1)"><i class="fas fa-thumbs-up" color="blue"></i><div class="good-count">' + like + '</div></button>' +
+      '<button disabled type="button" class="btn btn-light dislike" onclick = "toggleLike(\'' + postId + '\', -1)"><i class="fas fa-thumbs-down"></i><div class="bad-count">' + dislike + '</div></button>' +
+    '</div>' +
+    '<button type="button" class="btn btn-link" onclick="replyPost(\''+ postId +'\')">回覆</button>' +
+  '</div>' +
+  '</div>';
+  }
+    
 
 
   // TODO: 如果該篇文底下的like/dislike有包含自己的uid，則把他設成按過的藍色
@@ -202,9 +262,11 @@ function createPostElement(postId, replyTo, replyContent, content, author, like,
 function toggleLike(postId, likeValue) {
   var post;
   var postRef = firebase.database().ref('/posts/' + '/' + section + '/' + postId);
+
   postRef.once('value', function(snapshot) {
     if(snapshot){
       post = snapshot.val();
+
       switch(likeValue) {
         // 如果是按dislike
         case -1:
