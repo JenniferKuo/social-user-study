@@ -158,3 +158,44 @@ select.form-control:focus {
   color: #6a737d;
   border-left: .25em solid #dfe2e5;
 }
+
+/* Rating Star Widgets Style */
+.rating-stars{
+  display: none;
+  position: absolute;
+  z-index: 100;
+  background: white;
+  border-radius: 10px;
+  vertical-align: middle;
+  padding: 10px;
+  box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+  font-size: 0.8rem;
+}
+.rating-stars ul {
+  list-style-type:none;
+  padding: 0;
+  margin: 0;
+  display: inline;
+  -moz-user-select:none;
+  -webkit-user-select:none;
+}
+.rating-stars ul > li.star {
+  display:inline-block;
+  
+}
+
+/* Idle State of the stars */
+.rating-stars ul > li.star > i.fa {
+  font-size: 1em; /* Change the size of the stars */
+  color:#ccc; /* Color on idle state */
+}
+
+/* Hover state of the stars */
+.rating-stars ul > li.star.hover > i.fa {
+  color: #7ceae1;
+}
+
+/* Selected state of the stars */
+.rating-stars ul > li.star.selected > i.fa {
+  color: #36c1b6;
+}

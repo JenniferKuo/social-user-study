@@ -99,14 +99,21 @@ function showAllUsers(containerElement){
       return;
     // 只顯示不是admin 和這一分區的帳號
     if(!data.val().isAdmin && data.val().section == section){
-      containerElement.insertBefore(createUserElement(data.key, data.val().isActive), 
+      containerElement.insertBefore(createUserElement(data.key, data.val().isActive, data.val().like), 
       containerElement.firstChild);
     }
     // 另一區的user列表
     else if(!data.val().isAdmin && data.val().section != section){
-      secondContainer.insertBefore(createUserElement(data.key, data.val().isActive), 
+      secondContainer.insertBefore(createUserElement(data.key, data.val().isActive, data.val().like), 
       secondContainer.firstChild);
     }
+  });
+  // 如果like的排名變了
+  usersRef.on('child_moved', function(data) {
+    console.log('child moved');
+    console.log(data.val().username);
+    usersRef.off();
+    showAllUsers(document.getElementById('userList'));
   });
   // 某user欄位內容如果更新，就更新他的狀態顯示
   usersRef.on('child_changed', function(data) {
@@ -116,6 +123,9 @@ function showAllUsers(containerElement){
       return;
     var userElement = document.getElementById(data.key);
     userElement.getElementsByClassName('username')[0].innerHTML = data.val().username;
+    userElement.getElementsByClassName('like')[0].innerHTML = data.val().like;
+
+    // 更改按鈕顏色
     if(data.val().isActive){
       userElement.getElementsByClassName('volume-btn')[0].style.color = "dodgerblue";
       userElement.getElementsByClassName('mute-btn')[0].style.color = "lightgrey";
@@ -136,11 +146,12 @@ function showAllUsers(containerElement){
 }
 
 // 回傳一個user欄位的html
-function createUserElement(uid, isActive) {
+function createUserElement(uid, isActive, like) {
   var html = '<li class="nav-item" id="'+ uid +'">' +
-  '<a class="nav-link" href="#">' +
+  '<a class="nav-link" href="javascript: void(0)">' +
+    '<i class="fas fa-thumbs-up" style="color:grey"></i>' + '<span class="pr-1 like" style="color:grey">' + like + '</span>' +
     '<text class="username">' + uid + '</text>' +
-    '<button color="dodgerblue" class="btn user-btn p-1 mute-btn" onclick="disableUser(\''+ uid +'\')"><i class="fas fa-volume-mute"></i></button>' +
+    '<button class="btn user-btn p-1 mute-btn" onclick="disableUser(\''+ uid +'\')"><i class="fas fa-volume-mute"></i></button>' +
     '<button class="btn user-btn p-1 volume-btn" onclick="enableUser(\''+ uid +'\')"><i class="fas fa-volume-up"></i></button>' +
     '<button class="btn user-btn p-1 delete-btn" onclick="deleteUser(\''+ uid +'\')"><i class="fas fa-times"></i></button>' +
   '</a>' +
@@ -189,6 +200,7 @@ function showAllPost(containerElement){
 
       // 更新user的like數
       console.log(data.child("likeUsers").numChildren() - 1);
+
       usersTotalData[data.val().author].like = data.child("likeUsers").numChildren() - 1;
       // 更新user的dislike數
       console.log(data.child("dislikeUsers").numChildren() - 1);
@@ -232,12 +244,14 @@ function createPostElement(postId, replyTo, replyContent, content, author, like,
     '<p class="content text-body">' + content + '</p>' +
     '<p class="text-muted small">留言時間: <span class="createTime">' + createTime + '</span></p>';
   
+  // 只能按讚不是自己發布的貼文
   if(author != uid){
     html += '<div class="btn-group">' +
       '<button type="button" class="btn btn-light like" onclick="toggleLike(\'' + postId + '\', 1)"><i class="fas fa-thumbs-up" color="blue"></i><div class="good-count">' + like + '</div></button>' +
       '<button type="button" class="btn btn-light dislike" onclick = "toggleLike(\'' + postId + '\', -1)"><i class="fas fa-thumbs-down"></i><div class="bad-count">' + dislike + '</div></button>' +
     '</div>' +
     '<button type="button" class="btn btn-link" onclick="replyPost(\''+ postId +'\')">回覆</button>' +
+    '<button type="button" class="btn btn-link change" onclick="changeSide(\''+ postId +'\')">這改變了我的立場</button>' +
   '</div>' +
   '</div>';
   }else{
