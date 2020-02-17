@@ -124,29 +124,32 @@ app.get('/form', function (req, res) {
 
 // 登入，將uid存入session
 app.post('/login', function(req, res) {
-    var username = req.body.username;
-    req.session.username = username;
-    // TODO: 管理員帳號
-    if(username == "admin")
-        req.session.isAdmin = true;
-    else
-        req.session.isAdmin = false;
+    var uid = req.body.username;
 
-    // 更新firebase的user資訊
-    var user = {'username': username, 'isAdmin': req.session.isAdmin};
-    db.login(user, function(data){
+    db.login(uid, function(data){
         console.log(data);
-        if(data != null)
-            // 跳轉回主頁
-            if(req.session.isAdmin)
+        // 如果firebase有資料
+        if(data != null){
+            // 將資料存入session
+            req.session.username = uid;
+            req.session.isAdmin = data.isAdmin;
+            console.log(data.section);
+
+            // 如果已經有分區資料，就跳轉回主頁
+            if(data.section){
+                req.session.section = data.section;
                 res.redirect('/');
+            }
             // 去問卷頁
-            else
+            else{
                 res.redirect('/form');
-        else
+            }
+        }
+        else{
             res.render('login',{
                 loginFailed: true
             });
+        }
     });
 })
 

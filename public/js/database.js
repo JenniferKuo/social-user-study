@@ -13,7 +13,7 @@ var firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
-function writeNewPost(username, content) {
+function writeNewPost(username, content, replyTo, replyContent) {
   // Get a key for a new Post.
   var newPostKey = firebase.database().ref().child('posts/' + section).push().key;
 
@@ -28,7 +28,7 @@ function writeNewPost(username, content) {
     dislikeUsers: {"default": true},
     likeUsers: {"default": true},
     replyTo: replyTo,
-    replyContent: ""
+    replyContent: replyContent
   };
   // Write the new post's data simultaneously in the posts list and the user's post list.
   var updates = {};
@@ -43,8 +43,7 @@ function getUserData(){
     section = snapshot.val().section;
     isActive = snapshot.val().isActive;
     isAdmin = snapshot.val().isAdmin;
-    console.log(section);
-    console.log(isActive);
+    // 顯示貼文列表
     showAllPost(document.getElementById('post-container'));
     // 根據目前狀態是否可發言來顯示發言區塊
     isActive ? enablePost() : disablePost();
@@ -56,20 +55,39 @@ function getUserData(){
   });
 }
 
+
 function showAllUsers(containerElement){
+  console.log("showAllUsers");
   var usersRef = firebase.database().ref('users');
+  var secondContainer = document.getElementById("otherUserList");
+  // 先清空列表內容
+  $('#userList').empty();
+  $('#otherUserList').empty();
+
   // users 欄位如果新增
   usersRef.on('child_added', function(data) {
+    
     console.log("child_added");
-    // 只顯示不是admin的帳號
-    if(!data.val().isAdmin){
+    // TODO: fix bug
+    if($('#' + data.val().username).length)
+      return;
+    // 只顯示不是admin 和這一分區的帳號
+    if(!data.val().isAdmin && data.val().section == section){
       containerElement.insertBefore(createUserElement(data.key, data.val().isActive), 
       containerElement.firstChild);
     }
+    // 另一區的user列表
+    else if(!data.val().isAdmin && data.val().section != section){
+      secondContainer.insertBefore(createUserElement(data.key, data.val().isActive), 
+      secondContainer.firstChild);
+    }
   });
-  // users欄位內容如果更新
+  // 某user欄位內容如果更新，就更新他的狀態顯示
   usersRef.on('child_changed', function(data) {
     console.log("child_changed");
+    // 如果變更的是admin的欄位，就忽略
+    if(data.key == "admin")
+      return;
     var userElement = document.getElementById(data.key);
     userElement.getElementsByClassName('username')[0].innerHTML = data.val().username;
     if(data.val().isActive){
@@ -83,9 +101,12 @@ function showAllUsers(containerElement){
   });
   // users欄位如果有被移除
   usersRef.on('child_removed', function(data) {
+    // TODO: fix bug
     console.log("child_removed");
-    var userElement = document.getElementById(data.key);
-    userElement.parentElement.removeChild(userElement);
+    if($('#' + data.key).length){
+      var userElement = document.getElementById(data.key);
+      userElement.parentElement.removeChild(userElement);
+    }
   });
 }
 
@@ -118,11 +139,15 @@ function createUserElement(uid, isActive) {
 function showAllPost(containerElement){
     // TODO: 新增admin的刪除按鈕
     var postsRef = firebase.database().ref('posts/' + section);
+
+    // 先清空留言列表
+    $('#post-container').empty();
+
     // posts 欄位如果新增
     postsRef.on('child_added', function(data) {
       var author = data.val().author || '匿名';
       // 把新貼文的html元素插入再DIV中最新一個child之前
-      containerElement.insertBefore(createPostElement(data.key, data.val().content, author, data.val().like, data.val().dislike, data.val().createTime), 
+      containerElement.insertBefore(createPostElement(data.key, data.val().replyTo, data.val().replyContent, data.val().content, author, data.val().like, data.val().dislike, data.val().createTime), 
       containerElement.firstChild);
     });
     // posts欄位內容如果更新
@@ -142,11 +167,20 @@ function showAllPost(containerElement){
 }
 
 // 回傳一個貼文的html
-function createPostElement(postId, content, author, like, dislike, createTime) {
+function createPostElement(postId, replyTo, replyContent, content, author, like, dislike, createTime) {
+  if(replyTo != ""){
+    var replyHtml = '<div class="small text-muted quote" id="reply-container">' +
+    '<p class="mb-0 mt-2">回覆 @'+ replyTo +'</p>' +
+    '<p class="mb-2">'+ replyContent +'</p>' +
+    '</div>';
+  }else{
+    var replyHtml = "";
+  }
 
   var html = '<div class="media text-muted pt-3 post" id="'+ postId +'">' +
   '<div class="media-body pb-3 mb-0 medium lh-125 border-bottom border-gray">' +
     '<strong class="author d-block text-primary small">@' + author + '</strong>' +
+    replyHtml +
     '<p class="content text-body">' + content + '</p>' +
     '<p class="text-muted small">留言時間: <span class="createTime">' + createTime + '</span></p>' +
     '<div class="btn-group">' +
@@ -213,13 +247,6 @@ function toggleLike(postId, likeValue) {
   }); 
 }
 
-function replyPost(postId){
-  var postElement = document.getElementById(postId);
-  var content = postElement.querySelector('.content').innerHTML;
-  console.log(content);
-  // TODO: 設置post的回覆某人欄位
-}
-
 function disableUser(uid){
   var userRef = firebase.database().ref('/users/' + uid);
   userRef.update({isActive: false});
@@ -230,15 +257,26 @@ function enableUser(uid){
   userRef.update({isActive: true});
 }
 
-function addUser(uid){
+function addUser(uid, section){
+  console.log(uid);
+  if(uid == "")
+    return;
   var userRef = firebase.database().ref('/users/' + uid);
-  var user = {'username': uid, 'isAdmin': false, 'like': 0, 'dislike': 0, 'postNumber': 0, 'isActive': true};
+  var user = {'username': uid, 'isAdmin': false, 'like': 0, 'dislike': 0, 'postNumber': 0, 'isActive': true, 'section': section};
   userRef.update(user);
 }
 
 function deleteUser(uid){
+  var userRef = firebase.database().ref('/users/');
+  userRef.child(uid).remove();
+}
+
+function switchSection(){
   var userRef = firebase.database().ref('/users/' + uid);
-  userRef.remove();
+  var newSection = "";
+  section == "A"? newSection = "B" : newSection = "A";
+  var user = {'section': newSection};
+  userRef.update(user);
 }
 // TODO: 新增管理介面可新增/刪除user
 // TODO: 增加隨時更新user狀態/更新post/like數

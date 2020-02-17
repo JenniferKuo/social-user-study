@@ -18,8 +18,8 @@ firebase.initializeApp(firebaseConfig);
 
 
 var DB = {
-    login: function(user, cb){
-      firebase.database().ref('/users/' + user.username).once('value').then(function(snapshot){
+    login: function(uid, cb){
+      firebase.database().ref('/users/' + uid).once('value').then(function(snapshot){
         cb(snapshot.val());
       });
     },
