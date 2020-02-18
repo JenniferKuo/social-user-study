@@ -1,4 +1,4 @@
-const THRESHOLD = 4;
+const THRESHOLD = 3;
 var express = require('express');
 var session = require('express-session')
 var bodyParser = require('body-parser')
@@ -158,8 +158,8 @@ app.post('/sendResult', function(req, res) {
     var section;
     console.log(score);
 
-    // TODO: 計算問卷結果
-    if(score < THRESHOLD){
+    // TODO: 中間的改成random
+    if(score > THRESHOLD){
         section = "A";
     }else{
         section = "B";
