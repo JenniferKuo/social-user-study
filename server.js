@@ -184,6 +184,6 @@ app.get('/logout', function(req, res) {
 
 // 動態port number
 var port = process.env.PORT || 3000;
-app.listen(port_number, function () {
+app.listen(port, function () {
   console.log('Example app listening on port ' + port);
 })
