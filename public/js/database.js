@@ -385,6 +385,9 @@ function addChangeSideLog(ratingScore){
   console.log(log);
   var logRef = firebase.database().ref('/users/' + uid + '/changeLogs/' + newLogKey);
   logRef.update(log);
+
+  // TODO: 也幫被贊同/不贊同的user，增加一筆改變別人立場的紀錄
+  var userRef = firebase.database().ref('/users/' + tempLog.byWho);
 }
 
 // TODO: 增加隨時更新user狀態/更新post/like數/被回覆數/對誰回覆
