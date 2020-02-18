@@ -1,19 +1,19 @@
 var myQuestions = [
 	{
 		question: "你喜歡吃什麼水果?",
-		options: {
-			5: '蘋果',
-			2: '橘子',
-			1: '香蕉'
-		},
+		options: [
+			{5: '蘋果'},
+			{2: '橘子'},
+			{1: '香蕉'}
+        ],
 	},
 	{
 		question: "你喜歡什麼動物?",
-		options: {
-			1: '狗狗',
-			2: '小雞',
-			3: '貓貓'
-		}
+		options: [
+			{1: '狗狗'},
+			{2: '小雞'},
+			{3: '貓貓'}
+        ]
 	}
 ];
 
@@ -30,13 +30,14 @@ function showQuestions(questions, quizContainer){
         
         options = [];
         // for each available option to this question...
-        for(score in questions[i].options){
-            // TODO: 打亂選項
+        for(var j=0; j<questions[i].options.length; j++){
+            var score = Object.keys(questions[i].options[j])[0];
+
             options.push(
                 '<div class="form-check">'
                     + '<input class="form-check-input" type="radio" name="question'+i+'" value='+ score + '>'
                     + '<label class="form-check-label">'
-                    + questions[i].options[score]
+                    + questions[i].options[j][score]
                 + '</label></div>'
             );
         }

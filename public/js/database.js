@@ -49,12 +49,11 @@ function initialUserData(){
     personalData = snapshot.val();
     isAdmin = snapshot.val().isAdmin;
     console.log(section);
-    console.log(snapshot.val().section);
+
     // 如果分區變了，顯示貼文列表
     if(section != snapshot.val().section){
       section = snapshot.val().section;
       showAllPost(document.getElementById('post-container'));
-      // TODO: fix bug 別的區域的用戶發文會顯示出來
       // 如果是管理員
       if(isAdmin){
         // 顯示用戶列表
@@ -199,11 +198,8 @@ function showAllPost(containerElement){
       postElement.getElementsByClassName('createTime')[0].innerHTML = data.val().createTime;
 
       // 更新user的like數
-      console.log(data.child("likeUsers").numChildren() - 1);
-
       usersTotalData[data.val().author].like = data.child("likeUsers").numChildren() - 1;
       // 更新user的dislike數
-      console.log(data.child("dislikeUsers").numChildren() - 1);
       usersTotalData[data.val().author].dislike = data.child("dislikeUsers").numChildren() - 1;
       uploadUsersTotalData();
     });
