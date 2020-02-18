@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://fonts.googleapis.com/css?family=Noto+Sans+TC|Noto+Serif+TC&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="stylesheet" href="./css/main.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  <script src="js/main.js"></script>
+</head>
+<body class="bg-light">
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+    <a class="navbar-brand" href="#"><i class="fas fa-comments"></i>留言區</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <% if (username) { %>
+          <span class="nav-link">目前登入者: <span id="id-input"><%= username %></span></span>
+        </li>
+        <% if (isAdmin) { %>
+          <li class="nav-item">
+            <a class="nav-link" href="javascript: switchSection()">切換分區</a>
+          </li>
+        <% } %>
+        <li class="nav-item">
+          <a class="nav-link" href="/logout">登出</a>
+        </li>
+          <% } else { %>
+            <a class="nav-link" href="/login">登入</a>
+          <% } %>
+        </li>
+      </ul>
+      <% if (isAdmin) { %> 
+      <ul class="navbar-nav mr-0">
+        </li>
+          <a class="nav-link" href="javascript:showUserPanel()">User List</a>
+        </li>
+      </ul>
+      <% } %>
+    </div>
+  </nav>
+  <!-- 管理員則顯示側邊欄 -->
+  <% if (isAdmin) { %> 
+    <nav id="userPanel" class="col-md-2 d-none d-md-block bg-light sidebar small">
+      <div class="sidebar-sticky">
+        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+          <div class="form-group small">
+            <label for="name" class="control-label">ADD USER</label>
+            <input type="text" name="name" class="form-control" value="" id="inputID">
+          </div>
+          <a class="d-flex align-items-center text-muted" href="javascript:addUserBtnClicked()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus-circle"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+          </a>
+        </h6>
+        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+          <span>Current Users</span>
+        </h6>
+        <ul class="nav flex-column mb-2" id="userList">
+        </ul>
+        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+          <span>Other Users</span>
+        </h6>
+        <ul class="nav flex-column mb-2" id="otherUserList">
+        </ul>
+      </div>
+    </nav>
+  <% } %>
+  <div class="container">
+    <!-- 發表留言區塊 -->
+    <div class="my-3 p-3 bg-white rounded shadow-sm">
+      <fieldset id="disableArea" disabled></fieldset>
+      <form id="message-form" action="#">
+        <div class="form-group">
+          <h5 class="border-bottom border-gray pb-2 mb-2">發表留言</h5>
+          <div class="small text-muted quote" id="reply-container">
+            <p class="mb-0">回覆 @<span id="reply-user"></span></p>
+            <p class="mb-0" id="reply-content"></p>
+          </div>
+          <textarea id="message-input" class="form-control mt-2" rows="3"></textarea>
+        </div>
+        <!-- 警告區塊 -->
+        <div id="alert"></div>
+        <button id="submit-btn" class="btn btn-primary">送出</button>
+      </form>
+    </div>
+    <div class="my-3 p-3 bg-white rounded shadow-sm">
+      <h5 class="border-bottom border-gray pb-2 mb-0">留言列表</h5>
+      <div id="post-container"></div>
+    </div>
+  </div>
+  <div class='rating-stars text-center'>
+    <span>非常不贊同</span>
+    <ul id='stars'>
+      <li class='star' title='非常不贊同' data-value='1'>
+        <i class='fa fa-circle'></i>
+      </li>
+      <li class='star' title='不贊同' data-value='2'>
+        <i class='fa fa-circle'></i>
+      </li>
+      <li class='star' title='沒意見' data-value='3'>
+        <i class='fa fa-circle'></i>
+      </li>
+      <li class='star' title='贊同' data-value='4'>
+        <i class='fa fa-circle'></i>
+      </li>
+      <li class='star' title='非常贊同' data-value='5'>
+        <i class='fa fa-circle'></i>
+      </li>
+    </ul>
+    <span>非常贊同</span>
+  </div>
+  <script src="https://www.gstatic.com/firebasejs/7.8.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.8.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.8.0/firebase-database.js"></script>
+  <script src="js/database.js"></script>
+</body>
+</html>
