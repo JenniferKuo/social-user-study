@@ -14,13 +14,11 @@ body{
 }
 
 .post .good-count {
-    color: #444;
     padding: 0 10px 0 5px;
     display: inline-block;
     position: relative;
 }
 .post .bad-count {
-    color: #444;
     padding: 0 10px 0 5px;
     display: inline-block;
     position: relative;

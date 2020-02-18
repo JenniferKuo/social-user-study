@@ -184,7 +184,7 @@ function showAllPost(containerElement){
       console.log("post added");
       var author = data.val().author || '匿名';
       // 把新貼文的html元素插入再DIV中最新一個child之前
-      containerElement.insertBefore(createPostElement(data.key, data.val().replyTo, data.val().replyContent, data.val().content, author, data.val().like, data.val().dislike, data.val().createTime), 
+      containerElement.insertBefore(createPostElement(data.key, data.val().replyTo, data.val().replyContent, data.val().content, author, data.val().like, data.val().dislike, data.val().likeUsers, data.val().dislikeUsers, data.val().createTime), 
       containerElement.firstChild);
     });
     // posts欄位內容如果更新
@@ -196,6 +196,14 @@ function showAllPost(containerElement){
       postElement.getElementsByClassName('good-count')[0].innerHTML = data.val().like;
       postElement.getElementsByClassName('bad-count')[0].innerHTML = data.val().dislike;
       postElement.getElementsByClassName('createTime')[0].innerHTML = data.val().createTime;
+      
+      // 更新按鈕顏色
+      $('#'+data.key).find('.like').css('color', 'black');
+      $('#'+data.key).find('.dislike').css('color', 'black');
+      if(uid in data.val().likeUsers)
+        $('#'+data.key).find('.like').css('color', 'dodgerblue');
+      else if(uid in data.val().dislikeUsers)
+        $('#'+data.key).find('.dislike').css('color', 'dodgerblue');
 
       // 更新user的like數
       usersTotalData[data.val().author].like = data.child("likeUsers").numChildren() - 1;
@@ -223,7 +231,7 @@ function updateUsersTotalData(){
 }
 
 // 回傳一個貼文的html
-function createPostElement(postId, replyTo, replyContent, content, author, like, dislike, createTime) {
+function createPostElement(postId, replyTo, replyContent, content, author, like, dislike, likeUsers, dislikeUsers, createTime) {
   if(replyTo != ""){
     var replyHtml = '<div class="small text-muted quote" id="reply-container">' +
     '<p class="mb-0 mt-2">回覆 @'+ replyTo +'</p>' +
@@ -242,17 +250,31 @@ function createPostElement(postId, replyTo, replyContent, content, author, like,
   
   // 只能按讚不是自己發布的貼文
   if(author != uid){
-    html += '<div class="btn-group">' +
-      '<button type="button" class="btn btn-light like" onclick="toggleLike(\'' + postId + '\', 1)"><i class="fas fa-thumbs-up" color="blue"></i><div class="good-count">' + like + '</div></button>' +
-      '<button type="button" class="btn btn-light dislike" onclick = "toggleLike(\'' + postId + '\', -1)"><i class="fas fa-thumbs-down"></i><div class="bad-count">' + dislike + '</div></button>' +
+    html += '<div class="btn-group">';
+    // 如果有按過讚/噓 按鈕變成藍色
+    if(uid in likeUsers){
+      html +=
+      '<button style="color: dodgerblue" type="button" class="btn btn-light like" onclick="toggleLike(\'' + postId + '\', 1)"><i class="fas fa-thumbs-up"></i><div class="good-count">' + like + '</div></button>' +
+      '<button type="button" class="btn btn-light dislike" onclick = "toggleLike(\'' + postId + '\', -1)"><i class="fas fa-thumbs-down"></i><div class="bad-count">' + dislike + '</div></button>';
+    }else if(uid in dislikeUsers){
+      html +=
+      '<button type="button" class="btn btn-light like" onclick="toggleLike(\'' + postId + '\', 1)"><i class="fas fa-thumbs-up"></i><div class="good-count">' + like + '</div></button>' +
+      '<button style="color: dodgerblue" type="button" class="btn btn-light dislike" onclick = "toggleLike(\'' + postId + '\', -1)"><i class="fas fa-thumbs-down"></i><div class="bad-count">' + dislike + '</div></button>';
+    }else{
+      html +=
+      '<button type="button" class="btn btn-light like" onclick="toggleLike(\'' + postId + '\', 1)"><i class="fas fa-thumbs-up"></i><div class="good-count">' + like + '</div></button>' +
+      '<button type="button" class="btn btn-light dislike" onclick = "toggleLike(\'' + postId + '\', -1)"><i class="fas fa-thumbs-down"></i><div class="bad-count">' + dislike + '</div></button>';
+    }
+    html +=
     '</div>' +
     '<button type="button" class="btn btn-link" onclick="replyPost(\''+ postId +'\')">回覆</button>' +
     '<button type="button" class="btn btn-link change" onclick="changeSide(\''+ postId +'\')">這改變了我的立場</button>' +
   '</div>' +
   '</div>';
+    
   }else{
     html += '<div class="btn-group">' +
-      '<button disabled type="button" class="btn btn-light like" onclick="toggleLike(\'' + postId + '\', 1)"><i class="fas fa-thumbs-up" color="blue"></i><div class="good-count">' + like + '</div></button>' +
+      '<button disabled type="button" class="btn btn-light like" onclick="toggleLike(\'' + postId + '\', 1)"><i class="fas fa-thumbs-up"></i><div class="good-count">' + like + '</div></button>' +
       '<button disabled type="button" class="btn btn-light dislike" onclick = "toggleLike(\'' + postId + '\', -1)"><i class="fas fa-thumbs-down"></i><div class="bad-count">' + dislike + '</div></button>' +
     '</div>' +
     '<button type="button" class="btn btn-link" onclick="replyPost(\''+ postId +'\')">回覆</button>' +
