@@ -166,7 +166,7 @@ app.post('/sendResult', function(req, res) {
     }
     
     // TODO: 更改用戶資料
-    db.setUserSection(req.session.username, section, function(err){
+    db.setUserSection(req.session.username, section, score, function(err){
         if(err){
             
         }else{

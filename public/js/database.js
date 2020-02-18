@@ -354,6 +354,20 @@ function switchSection(){
   var user = {'section': newSection};
   userRef.update(user);
 }
-// TODO: 新增管理介面可新增/刪除user
-// TODO: 增加隨時更新user狀態/更新post/like數
-// TODO: 增加tag特定某人功能，從字串判斷是否有 @
+
+function addChangeSideLog(ratingScore){
+  var newLogKey = firebase.database().ref('/users/' + uid + '/changeLogs').push().key;
+  var log = {
+    'timestamp': new Date(),
+    'postId': tempLog.postId,
+    'byWho': tempLog.byWho,
+    'content': tempLog.content,
+    'sideScore': ratingScore
+  };
+  console.log(log);
+  var logRef = firebase.database().ref('/users/' + uid + '/changeLogs/' + newLogKey);
+  logRef.update(log);
+}
+
+// TODO: 增加隨時更新user狀態/更新post/like數/被回覆數/對誰回覆
+

@@ -76,16 +76,11 @@ $(document).ready( function() {
       $(stars[i]).addClass('selected');
     }
     
-    // JUST RESPONSE (Not needed)
+    // 取得分數
     var ratingValue = parseInt($('#stars li.selected').last().data('value'), 10);
-    var msg = "";
-    if (ratingValue > 1) {
-        msg = "Thanks! You rated this " + ratingValue + " stars.";
-    }
-    else {
-        msg = "We will improve ourselves. You rated this " + ratingValue + " stars.";
-    }
-    console.log(msg);
+    // 更新log資料到firebase
+    addChangeSideLog(ratingValue);
+    // 隱藏評分區塊
     $('.rating-stars').hide();
   });
 });
@@ -123,14 +118,25 @@ function replyPost(postId){
     $('#reply-content').html(content);
 }
 
+var tempLog = {}
 function changeSide(postId){
     var postElement = document.getElementById(postId);
     var username = postElement.querySelector('.author').innerHTML.replace("@","");
     var content = postElement.querySelector('.content').innerHTML;
 
+    // 暫存到global變數
+    tempLog = {
+        'postId': postId,
+        'uid': uid,
+        'byWho': username,
+        'content': content
+    };
+
     var offset = $('#'+ postId).find('.change').offset()
-    $('.rating-stars').css("top", offset.top - 30);
+    $('.rating-stars').css("top", offset.top - 40);
     $('.rating-stars').css("left", offset.left + 30);
-    $('.rating-stars').show();
-    
+    if($('.rating-stars').css('display') == 'none')
+        $('.rating-stars').show();
+    else
+        $('.rating-stars').hide();
 }
