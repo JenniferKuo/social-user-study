@@ -140,3 +140,22 @@ function changeSide(postId){
     else
         $('.rating-stars').hide();
 }
+
+function sortingClicked(){
+  var usersRef = firebase.database().ref('users').orderByChild(sortingBy);
+  usersRef.off();
+
+  switch(sortingBy){
+    case 'like':
+      sortingBy = "currentScore";
+      $('.sorting').html("Score");
+      break;
+    case 'currentScore':
+      sortingBy = "like";
+      $('.sorting').html("Likes");
+      break;
+  }
+  
+  
+  showAllUsers(document.getElementById('userList'));
+}

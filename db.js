@@ -66,7 +66,7 @@ var DB = {
 
     setUserSection: function(uid, sectionValue, score, cb){
       // score是問卷分數
-      var updates = {'section': sectionValue,'score': score};
+      var updates = {'section': sectionValue,'score': score, 'currentScore': score};
       firebase.database().ref('/users/'+uid).update(updates, cb);
     }
 }

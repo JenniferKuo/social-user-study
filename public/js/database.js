@@ -82,9 +82,10 @@ function uploadUsersTotalData(){
   });
 }
 
+var sortingBy = "like";
 function showAllUsers(containerElement){
   console.log("showAllUsers");
-  var usersRef = firebase.database().ref('users').orderByChild('like');
+  var usersRef = firebase.database().ref('users').orderByChild(sortingBy);
   var secondContainer = document.getElementById("otherUserList");
   // 先清空列表內容
   $('#userList').empty();
@@ -98,12 +99,12 @@ function showAllUsers(containerElement){
       return;
     // 只顯示不是admin 和這一分區的帳號
     if(!data.val().isAdmin && data.val().section == section){
-      containerElement.insertBefore(createUserElement(data.key, data.val().isActive, data.val().like), 
+      containerElement.insertBefore(createUserElement(data.key, data.val().isActive, data.val().like, data.val().currentScore), 
       containerElement.firstChild);
     }
     // 另一區的user列表
     else if(!data.val().isAdmin && data.val().section != section){
-      secondContainer.insertBefore(createUserElement(data.key, data.val().isActive, data.val().like), 
+      secondContainer.insertBefore(createUserElement(data.key, data.val().isActive, data.val().like, data.val().currentScore), 
       secondContainer.firstChild);
     }
   });
@@ -145,10 +146,11 @@ function showAllUsers(containerElement){
 }
 
 // 回傳一個user欄位的html
-function createUserElement(uid, isActive, like) {
+function createUserElement(uid, isActive, like, currentScore) {
   var html = '<li class="nav-item" id="'+ uid +'">' +
   '<a class="nav-link" href="javascript: void(0)">' +
     '<i class="fas fa-thumbs-up" style="color:grey"></i>' + '<span class="pr-1 like" style="color:grey">' + like + '</span>' +
+    '<i class="fa fa-circle" style="color:#36c1b6"></i>' + '<span class="pr-1 score" style="color:grey">' + currentScore + '</span>' +
     '<text class="username">' + uid + '</text>' +
     '<button class="btn user-btn p-1 mute-btn" onclick="disableUser(\''+ uid +'\')"><i class="fas fa-volume-mute"></i></button>' +
     '<button class="btn user-btn p-1 volume-btn" onclick="enableUser(\''+ uid +'\')"><i class="fas fa-volume-up"></i></button>' +
@@ -356,7 +358,7 @@ function addUser(uid, section){
   if(uid == "")
     return;
   var userRef = firebase.database().ref('/users/' + uid);
-  var user = {'username': uid, 'isAdmin': false, 'like': 0, 'dislike': 0, 'postNumber': 0, 'isActive': true, 'section': section};
+  var user = {'username': uid, 'isAdmin': false, 'like': 0, 'dislike': 0, 'postNumber': 0, 'isActive': true, 'section': section, 'currentScore': 0, 'score': 0};
   userRef.update(user);
 }
 
@@ -385,6 +387,7 @@ function addChangeSideLog(ratingScore){
   console.log(log);
   var logRef = firebase.database().ref('/users/' + uid + '/changeLogs/' + newLogKey);
   logRef.update(log);
+  firebase.database().ref('/users/' + uid).update({"currentScore": ratingScore});
 
   // TODO: 也幫被贊同/不贊同的user，增加一筆改變別人立場的紀錄
   var userRef = firebase.database().ref('/users/' + tempLog.byWho);
