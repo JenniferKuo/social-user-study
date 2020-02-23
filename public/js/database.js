@@ -64,10 +64,32 @@ function initialUserData(){
       isActive = snapshot.val().isActive;
       isActive ? enablePost() : disablePost();
     }
+    // 監聽實驗是否結束
+    isExperimentEnd();
   });
 
   // 抓取用戶資料
   updateUsersTotalData();
+}
+
+function isExperimentEnd(){
+  firebase.database().ref('isEnd').on('value', function(snapshot){
+    var isEnd = snapshot.val();
+    if(isEnd){
+      window.location.href = "/form2";
+    }
+  });
+}
+
+// 開始實驗，將所有人轉至另一問卷頁面
+function startExperiment(){
+  firebase.database().ref().update({'isEnd': false});
+  window.location.href = "/";
+}
+
+// 結束實驗，將所有人轉至另一問卷頁面
+function endExperiment(){
+  firebase.database().ref().update({'isEnd': true});
 }
 
 function uploadPersonalData(uid){

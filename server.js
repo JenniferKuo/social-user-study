@@ -123,6 +123,27 @@ app.get('/form', function (req, res) {
     }
 })
 
+// 輸出結束問卷頁面
+app.get('/form2', function (req, res) {
+    // 試著看看 session 裡面有沒有 username, 沒有就轉至登入頁面
+    if(req.session.username == undefined){
+        res.redirect('/login');
+    }else{
+        // 判斷是否是管理員
+        var username = req.session.username;
+        var isAdmin = req.session.isAdmin;
+
+        if (username == "admin") {
+            isAdmin = true;
+        }
+
+        res.render('form2',{
+            username: username,
+            isAdmin: isAdmin
+        });
+    }
+})
+
 // 登入，將uid存入session
 app.post('/login', function(req, res) {
     var uid = req.body.username;

@@ -1,12 +1,12 @@
 var myQuestions = [
 	{
-		question: "如果現在有兩個全球性的計畫項目，一個會給整個社會帶來變革，改善絕大多數人(99%)的生活，一個會拯救少部分的人的生命(1%)，只能選其一，從整個人類社會的角度出發，你會選擇改善絕大多數人的生活嗎？",
+		question: "你覺得今天的實驗好玩嗎?",
 		options: [
-            {5: '非常同意'},
-            {4: '同意'},
-            {3: '沒意見'},
-            {2: '不同意'},
-            {1: '非常不同意'}
+            {5: '非常棒'},
+            {4: '棒'},
+            {3: '普通'},
+            {2: '爛'},
+            {1: '超級爛'}
         ],
     }
 ];
@@ -82,8 +82,6 @@ function showResults(resultsContainer){
         }
         // 加總選項分數
 		sum += parseInt((answerContainers[i].querySelector('input[name=question'+i+']:checked') || 0).value);
-    }
-    
-    // TODO: 儲存到資料庫或csv
+	}
     sendResult(sum);
 }
