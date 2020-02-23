@@ -31,6 +31,7 @@ $(document).ready( function() {
                 $('#reply-user').empty();
                 $('#reply-content').empty();
             }else{
+                alert(section);
                 $('.alert').remove();
                 var html = '<div class="alert alert-warning alert-dismissible fade show" role="alert">留言欄位不可為空<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
                 $('#alert').append(html);

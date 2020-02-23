@@ -48,7 +48,6 @@ function initialUserData(){
   firebase.database().ref('/users/' + uid).on('value', function(snapshot){
     personalData = snapshot.val();
     isAdmin = snapshot.val().isAdmin;
-    console.log(section);
 
     // 如果分區變了，顯示貼文列表
     if(section != snapshot.val().section){
@@ -211,6 +210,7 @@ function showAllPost(containerElement){
       usersTotalData[data.val().author].like = data.child("likeUsers").numChildren() - 1;
       // 更新user的dislike數
       usersTotalData[data.val().author].dislike = data.child("dislikeUsers").numChildren() - 1;
+      // TODO: section有問題
       uploadUsersTotalData();
     });
     // posts欄位如果有被移除貼文
@@ -225,7 +225,7 @@ var usersTotalData = {};
 function updateUsersTotalData(){
   // likeUsers, dislikeUsers, replyTo
   var usersRef = firebase.database().ref('users');
-  usersRef.once('value', function(snapshot){
+  usersRef.on('value', function(snapshot){
     usersTotalData = snapshot.val();
     console.log("get");
     console.log(usersTotalData);
@@ -300,7 +300,6 @@ function toggleLike(postId, likeValue) {
   postRef.once('value', function(snapshot) {
     if(snapshot){
       post = snapshot.val();
-
       switch(likeValue) {
         // 如果是按dislike
         case -1:
@@ -354,7 +353,6 @@ function enableUser(uid){
 }
 
 function addUser(uid, section){
-  console.log(uid);
   if(uid == "")
     return;
   var userRef = firebase.database().ref('/users/' + uid);
@@ -384,7 +382,6 @@ function addChangeSideLog(ratingScore){
     'content': tempLog.content,
     'sideScore': ratingScore
   };
-  console.log(log);
   var logRef = firebase.database().ref('/users/' + uid + '/changeLogs/' + newLogKey);
   logRef.update(log);
   firebase.database().ref('/users/' + uid).update({"currentScore": ratingScore});

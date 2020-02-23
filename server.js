@@ -36,6 +36,7 @@ app.get('/', function (req, res) {
         if (username == "admin") {
             isAdmin = true;
         }
+        console.log(req.session);
         console.log(username +" " +isAdmin);
         res.render('forum',{
             username: username,
