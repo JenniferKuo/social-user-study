@@ -204,6 +204,10 @@ app.get('/logout', function(req, res) {
   res.redirect('/login');
 })
 
+app.get('/sheet', function(req, res){
+    res.render('sheet');
+})
+
 // 動態port number
 var port = process.env.PORT || 3000;
 app.listen(port, function () {
