@@ -83,8 +83,10 @@ function isExperimentEnd(){
 
 // 開始實驗，將所有人轉至另一問卷頁面
 function startExperiment(){
-  firebase.database().ref().update({'isEnd': false});
-  window.location.href = "/";
+  firebase.database().ref().update({'isEnd': false}).then(() => {
+    window.location.href = "/";
+  });
+  
 }
 
 // 結束實驗，將所有人轉至另一問卷頁面
