@@ -23,9 +23,16 @@ var DB = {
         cb(snapshot.val());
       });
     },
-    addUser: function(user, cb){
-      firebase.database().ref('/users/' + user.username).update(user, cb);
-      console.log(user);
+    addUser: function(users, cb){
+      firebase.database().ref('/users/').update(users, cb);
+      console.log(users);
+    },
+    deleteUser: function(from, to, cb){
+      var userRef = firebase.database().ref('/users/');
+      for(var i=from; i<=to; i++){
+        userRef.child(i).remove();
+      }
+      cb(from);
     },
     addPost: function (post) {
           var newPostKey = firebase.database().ref().child('posts').push().key;

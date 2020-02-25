@@ -78,16 +78,35 @@ app.post('/posts', function (req, res) {
 })
 
 // 增加使用者頁面
-app.get('/addUser', function (req, res) {
-    res.render('addUser');
+app.get('/editUser', function (req, res) {
+    res.render('editUser');
 })
 
 // 新增使用者
 app.post('/addUser', function(req, res) {
-    var username = req.body.username;
+    var from = parseInt(req.body.idFrom);
+    var to = parseInt(req.body.idTo);
+    var users = {};
     // 更新firebase的user資訊
-    var user = {'username': username, 'isAdmin': false, 'like': 0, 'dislike': 0, 'postNumber': 0, 'isActive': true};
-    db.addUser(user, function(data){
+    for(var i=from; i<=to; i++){
+        var user = {'username': i, 'isAdmin': false, 'like': 0, 'dislike': 0, 'postNumber': 0, 'isActive': true};
+        users[i] = user;
+    }
+    console.log(from + to);
+    db.addUser(users, function(data){
+        console.log(data);
+        res.send({
+            status: 'SUCCESS'
+        });
+    });
+})
+
+// 刪除使用者
+app.post('/deleteUser', function(req, res) {
+    var from = parseInt(req.body.idFrom);
+    var to = parseInt(req.body.idTo);
+    // 更新firebase的user資訊
+    db.deleteUser(from, to, function(data){
         console.log(data);
         res.send({
             status: 'SUCCESS'
