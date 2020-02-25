@@ -8,41 +8,30 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-    <script src="js/form2.js"></script>
+    <script src="js/editForm.js"></script>
   </head>
+  <style>
+    textarea {
+      width: 100%;
+      min-height: 500px;
+    }
+  </style>
   <body class="bg-light">
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
-      <a class="navbar-brand" href="#">問卷</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarCollapse">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item active">
-            <% if (username) { %>
-            <span class="nav-link">目前登入者: <span id="id-input"><%= username %></span></span>
-          </li>
-              <% if (isAdmin) { %>
-                <li class="nav-item">
-                  <a class="nav-link" href="javascript: startExperiment()">開始實驗</a>
-                </li>  
-              <% } %>
-          <li class="nav-item">
-            <a class="nav-link" href="/logout">登出</a>
-          </li>
-            <% } else { %>
-              <a class="nav-link" href="/login">登入</a>
-            <% } %>
-          </li>
-        </ul>
-      </div>
-    </nav>
-    <div class="container">
+    <div class="container text-center">
       <form>
-        <div id="question-container"></div>
-        
+        <textarea name="question" id="question-container">
+
+        </textarea>
       </form>
-      <button class="btn btn-primary" onclick="showResults()">送出並結束實驗</button>
+      <button class="btn btn-primary" onclick="editQuestion()">修改開始問卷</button>
+    </div>
+    <div class="container text-center">
+      <form>
+        <textarea name="question" id="question-container2">
+
+        </textarea>
+      </form>
+      <button class="btn btn-primary" onclick="editQuestion2()">修改結束問卷</button>
     </div>
   
     </div>

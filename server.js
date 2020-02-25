@@ -4,13 +4,42 @@ var session = require('express-session')
 var bodyParser = require('body-parser')
 var cors = require('cors')
 var db = require('./db');
-
 var app = express();
+const fs = require('fs');
+
+function jsonReader(filePath, cb) {
+    fs.readFile(filePath, (err, fileData) => {
+        if (err) {
+            return cb && cb(err);
+        }
+        try {
+            const object = JSON.parse(fileData);
+            return cb(null, object);
+        } catch(err) {
+            return cb && cb(err);
+        }
+    })
+}
+
+function jsonWriter(filePath, data, cb){
+    const jsonString = JSON.stringify(data);
+    fs.writeFile(filePath, jsonString, err => {
+        if (err) {
+            console.log('Error writing file', err);
+            return cb && cb(err);
+        } else {
+            console.log('Successfully wrote file');
+            return cb(null);
+        }
+    });
+}
 
 // 使用 session，要設定一個 secret key
 app.use(session({
   secret: 'keyboard cat',
 }))
+
+
 
 // 有了這個才能透過 req.body 取東西
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -80,6 +109,64 @@ app.post('/posts', function (req, res) {
 // 增加使用者頁面
 app.get('/editUser', function (req, res) {
     res.render('editUser');
+})
+
+// 編輯問卷頁面
+app.get('/editForm', function (req, res) {
+    res.render('editForm');
+})
+
+// 拿到問卷資料
+app.get('/getFormJson', function (req, res) {
+    jsonReader('./form.json', (err, result) => {
+        if (err) {
+            console.log(err);
+            return;
+        }else{
+            res.send(result);
+        }
+    });
+})
+
+// 修改問卷資料
+app.post('/setFormJson', function (req, res) {
+    const data = req.body.text;
+    console.log(req.body);
+    const jsonString = JSON.parse(data);
+    jsonWriter('./form.json', jsonString, (err) => {
+        if (err) {
+            console.log(err);
+            return;
+        }
+        console.log("successfully save jsonfile");
+        res.send({status: "SUCCESS"});
+    });
+})
+
+// 拿到問卷2資料
+app.get('/getForm2Json', function (req, res) {
+    jsonReader('./form2.json', (err, result) => {
+        if (err) {
+            console.log(err);
+            return;
+        }
+        res.send(result);
+    });
+})
+
+// 修改問卷2資料
+app.post('/setForm2Json', function (req, res) {
+    const data = req.body.text;
+    console.log(req.body);
+    const jsonString = JSON.parse(data);
+    jsonWriter('./form2.json', jsonString, (err) => {
+        if (err) {
+            console.log(err);
+            return;
+        }
+        console.log("successfully save jsonfile");
+        res.send({status: "SUCCESS"});
+    });
 })
 
 // 新增使用者

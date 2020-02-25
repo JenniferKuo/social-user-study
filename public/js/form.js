@@ -1,19 +1,33 @@
-var myQuestions = [
-	{
-		question: "如果現在有兩個全球性的計畫項目，一個會給整個社會帶來變革，改善絕大多數人(99%)的生活，一個會拯救少部分的人的生命(1%)，只能選其一，從整個人類社會的角度出發，你會選擇改善絕大多數人的生活嗎？",
-		options: [
-            {5: '非常同意'},
-            {4: '同意'},
-            {3: '沒意見'},
-            {2: '不同意'},
-            {1: '非常不同意'}
-        ],
-    }
-];
+var myQuestions = [];
+// var myQuestions = [
+//     {
+//         "question": "如果現在有兩個全球性的計畫項目，一個會給整個社會帶來變革，改善絕大多數人(99%)的生活，一個會拯救少部分的人的生命(1%)，只能選其一，從整個人類社會的角度出發，你會選擇改善絕大多數人的生活嗎？",
+//         "options": [
+//             {"5": "非常同意"},
+//             {"4": "同意"},
+//             {"3": "沒意見"},
+//             {"2": "不同意"},
+//             {"1": "非常不同意"}
+//         ]
+//     }
+// ];
 
 $(document).ready( function() {
-    showQuestions(myQuestions, document.getElementById('question-container'));
+    initialQuestion();
 });
+
+function initialQuestion(){
+    $.ajax({
+        async: true,
+        crossDomain: true,
+        url: "/getFormJson",
+        'Access-Control-Allow-Origin': '*',
+        success: function(response) {
+            myQuestions = response;
+            showQuestions(myQuestions, document.getElementById('question-container'));
+      },
+    });
+}
 
 function showQuestions(questions, quizContainer){
     var output = [];

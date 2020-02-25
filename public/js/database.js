@@ -197,7 +197,6 @@ function createUserElement(uid, isActive, like, currentScore) {
 
 
 function showAllPost(containerElement){
-    // TODO: 新增admin的刪除按鈕
     var postsRef = firebase.database().ref('posts/' + section);
     postsRef.off();
 
@@ -234,7 +233,6 @@ function showAllPost(containerElement){
       usersTotalData[data.val().author].like = data.child("likeUsers").numChildren() - 1;
       // 更新user的dislike數
       usersTotalData[data.val().author].dislike = data.child("dislikeUsers").numChildren() - 1;
-      // TODO: section有問題
       uploadUsersTotalData();
     });
     // posts欄位如果有被移除貼文
@@ -294,27 +292,32 @@ function createPostElement(postId, replyTo, replyContent, content, author, like,
     html +=
     '</div>' +
     '<button type="button" class="btn btn-link" onclick="replyPost(\''+ postId +'\')">回覆</button>' +
-    '<button type="button" class="btn btn-link change" onclick="changeSide(\''+ postId +'\')">這改變了我的立場</button>' +
-  '</div>' +
-  '</div>';
+    '<button type="button" class="btn btn-link change" onclick="changeSide(\''+ postId +'\')">這改變了我的立場</button>';
     
   }else{
     html += '<div class="btn-group">' +
       '<button disabled type="button" class="btn btn-light like" onclick="toggleLike(\'' + postId + '\', 1)"><i class="fas fa-thumbs-up"></i><div class="good-count">' + like + '</div></button>' +
       '<button disabled type="button" class="btn btn-light dislike" onclick = "toggleLike(\'' + postId + '\', -1)"><i class="fas fa-thumbs-down"></i><div class="bad-count">' + dislike + '</div></button>' +
     '</div>' +
-    '<button type="button" class="btn btn-link" onclick="replyPost(\''+ postId +'\')">回覆</button>' +
-  '</div>' +
-  '</div>';
+    '<button type="button" class="btn btn-link" onclick="replyPost(\''+ postId +'\')">回覆</button>';
   }
-    
 
+  if(isAdmin){
+    html += '<button style="color:red" type="button" class="btn btn-link" onclick="deletePost(\''+ postId +'\')">刪除</button>';
+  }
+  
+  html +=   '</div></div>';
 
-  // TODO: 如果該篇文底下的like/dislike有包含自己的uid，則把他設成按過的藍色
   var div = document.createElement('div');
   div.innerHTML = html;
   var postElement = div.firstChild;
   return postElement;
+}
+
+// admin可以刪除貼文
+function deletePost(postId){
+  var postRef = firebase.database().ref('/posts/' + '/' + section);
+  postRef.child(postId).remove();
 }
 
 function toggleLike(postId, likeValue) {

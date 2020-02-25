@@ -1,59 +1,21 @@
-var myQuestions = [
-	{
-		question: "你覺得今天的實驗好玩嗎?",
-		options: [
-            {A: '非常棒'},
-            {B: '棒'},
-            {C: '普通'},
-            {D: '爛'},
-            {E: '超級爛'}
-        ]
-    },
-    {
-        question: "你覺得新竹如何?",
-		options: [
-            {A: '非常棒'},
-            {B: '棒'},
-            {C: '普通'},
-            {D: '爛'},
-            {E: '超級爛'}
-        ]
-    },
-    {
-        question: "你覺得哥哥屁股如何?",
-		options: [
-            {A: '非常棒'},
-            {B: '棒'},
-            {C: '普通'},
-            {D: '爛'},
-            {E: '超級爛'}
-        ]
-    },
-    {
-        question: "你覺得貓貓如何?",
-		options: [
-            {A: '非常棒'},
-            {B: '棒'},
-            {C: '普通'},
-            {D: '爛'},
-            {E: '超級爛'}
-        ]
-    },
-    {
-        question: "你覺得狗狗如何?",
-		options: [
-            {A: '非常棒'},
-            {B: '棒'},
-            {C: '普通'},
-            {D: '爛'},
-            {E: '超級爛'}
-        ]
-    }
-];
+var myQuestions = [];
 
 $(document).ready( function() {
-    showQuestions(myQuestions, document.getElementById('question-container'));
+    initialQuestion();
 });
+
+function initialQuestion(){
+    $.ajax({
+        async: true,
+        crossDomain: true,
+        url: "/getForm2Json",
+        'Access-Control-Allow-Origin': '*',
+        success: function(response) {
+            myQuestions = response;
+            showQuestions(myQuestions, document.getElementById('question-container'));
+      },
+    });
+}
 
 function showQuestions(questions, quizContainer){
     var output = [];

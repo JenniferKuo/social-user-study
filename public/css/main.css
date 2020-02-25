@@ -29,6 +29,7 @@ body{
 
  .sidebar {
     min-width: 210px;
+    transition: min-width 2s;
     position: fixed;
     top: 0;
     bottom: 0;

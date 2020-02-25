@@ -102,7 +102,15 @@ function addUserBtnClicked(){
 }
 
 function showUserPanel(){
-    ($('#userPanel').css("visibility") == "visible")? $('#userPanel').css("visibility", "hidden") : $('#userPanel').css("visibility", "visible");
+    ($('#userPanel').css("display") == "block")? closePanel() : openPanel();
+}
+
+function openPanel(){
+  $('#userPanel').css("display", "block");
+}
+
+function closePanel(){
+  $('#userPanel').css("display", "none");
 }
 
 function replyPost(postId){
