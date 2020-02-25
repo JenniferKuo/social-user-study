@@ -46,31 +46,46 @@ function showQuestions(questions, quizContainer){
     quizContainer.innerHTML = output.join('');
 }
 
-function sendResult(score){
+function sendResult(ans, score){
     var data = {"score": score};
+    let id = $('#id-input').text();
+    var url = "https://script.google.com/macros/s/AKfycbyABZt9bsN8ghP5LCLGeyQwJ1zp5YGbCPxjpLYFVQMU-ExnSVP7/exec";
     $.ajax({
         async: true,
         crossDomain: true,
-        url: "/sendResult",
-        type: 'post',
-        data: JSON.stringify(data),
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
+        url: url,
+        data: {
+            "id": id,
+            "answers": ans.toString()
         },
-        dataType: 'json',
-        // 結果成功回傳
-        success: function (result) {
-            console.log(result);
-            location.href = "/";
-        }
+        'Access-Control-Allow-Origin': '*',
+        success: function(response) {
+            $.ajax({
+                async: true,
+                crossDomain: true,
+                url: "/sendResult",
+                type: 'post',
+                data: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                dataType: 'json',
+                // 結果成功回傳
+                success: function (result) {
+                    console.log(result);
+                    location.href = "/";
+                }
+            });
+      },
     });
 }
 
 function showResults(){
     var questions = myQuestions;
 	var quizContainer = document.getElementById('question-container');
-	var answerContainers = quizContainer.querySelectorAll('.options');
+    var answerContainers = quizContainer.querySelectorAll('.options');
+    var ans = [];
     var sum = 0;
 
 	// 檢查每個問題選項
@@ -80,10 +95,11 @@ function showResults(){
             alert("請作答所有問題");
             return;
         }
+        ans.push(answerContainers[i].querySelector('input[name=question'+i+']:checked').value);
         // 加總選項分數
 		sum += parseInt((answerContainers[i].querySelector('input[name=question'+i+']:checked') || 0).value);
     }
     
     // TODO: 儲存到資料庫或csv
-    sendResult(sum);
+    sendResult(ans, sum);
 }
