@@ -67,7 +67,7 @@ function sendResult(score){
     });
 }
 
-function showResults(resultsContainer){
+function showResults(){
     var questions = myQuestions;
 	var quizContainer = document.getElementById('question-container');
 	var answerContainers = quizContainer.querySelectorAll('.options');

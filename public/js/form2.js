@@ -2,12 +2,52 @@ var myQuestions = [
 	{
 		question: "你覺得今天的實驗好玩嗎?",
 		options: [
-            {5: '非常棒'},
-            {4: '棒'},
-            {3: '普通'},
-            {2: '爛'},
-            {1: '超級爛'}
-        ],
+            {A: '非常棒'},
+            {B: '棒'},
+            {C: '普通'},
+            {D: '爛'},
+            {E: '超級爛'}
+        ]
+    },
+    {
+        question: "你覺得新竹如何?",
+		options: [
+            {A: '非常棒'},
+            {B: '棒'},
+            {C: '普通'},
+            {D: '爛'},
+            {E: '超級爛'}
+        ]
+    },
+    {
+        question: "你覺得哥哥屁股如何?",
+		options: [
+            {A: '非常棒'},
+            {B: '棒'},
+            {C: '普通'},
+            {D: '爛'},
+            {E: '超級爛'}
+        ]
+    },
+    {
+        question: "你覺得貓貓如何?",
+		options: [
+            {A: '非常棒'},
+            {B: '棒'},
+            {C: '普通'},
+            {D: '爛'},
+            {E: '超級爛'}
+        ]
+    },
+    {
+        question: "你覺得狗狗如何?",
+		options: [
+            {A: '非常棒'},
+            {B: '棒'},
+            {C: '普通'},
+            {D: '爛'},
+            {E: '超級爛'}
+        ]
     }
 ];
 
@@ -46,32 +86,30 @@ function showQuestions(questions, quizContainer){
     quizContainer.innerHTML = output.join('');
 }
 
-function sendResult(score){
-    var data = {"score": score};
+function send(answers) {
+    let id = $('#id-input').text();
+    let ans = answers;
     $.ajax({
         async: true,
         crossDomain: true,
-        url: "/sendResult",
-        type: 'post',
-        data: JSON.stringify(data),
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
+        url: "https://script.google.com/macros/s/AKfycbwCUBozIVtwOh119-rD2bZMHkMxFKds4_WJQPtJQAtmDKmn3MA/exec",
+        data: {
+            "id": id,
+            "answers": ans.toString()
         },
-        dataType: 'json',
-        // 結果成功回傳
-        success: function (result) {
-            console.log(result);
-            location.href = "/";
-        }
+        'Access-Control-Allow-Origin': '*',
+        success: function(response) {
+            alert("送出成功! 已經收到您的回覆");
+            window.location.href = "/logout";
+      },
     });
-}
+  };
 
-function showResults(resultsContainer){
+function showResults(){
     var questions = myQuestions;
 	var quizContainer = document.getElementById('question-container');
-	var answerContainers = quizContainer.querySelectorAll('.options');
-    var sum = 0;
+    var answerContainers = quizContainer.querySelectorAll('.options');
+    var answers = [];
 
 	// 檢查每個問題選項
 	for(var i=0; i<questions.length; i++){
@@ -80,8 +118,7 @@ function showResults(resultsContainer){
             alert("請作答所有問題");
             return;
         }
-        // 加總選項分數
-		sum += parseInt((answerContainers[i].querySelector('input[name=question'+i+']:checked') || 0).value);
+        answers.push(answerContainers[i].querySelector('input[name=question'+i+']:checked').value);
 	}
-    sendResult(sum);
+    send(answers);
 }
