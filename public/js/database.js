@@ -38,6 +38,10 @@ function writeNewPost(username, content, replyTo, replyContent) {
   personalData['postNumber'] = personalData['postNumber'] + 1;
   uploadPersonalData(uid);
 
+  if(replyTo != ""){
+    usersTotalData[replyTo].replyNumber = parseInt(usersTotalData[replyTo].replyNumber) + 1;
+    uploadUsersTotalData();
+  }
   return firebase.database().ref().update(updates);
 }
 
@@ -48,6 +52,9 @@ function initialUserData(){
   firebase.database().ref('/users/' + uid).on('value', function(snapshot){
     personalData = snapshot.val();
     isAdmin = snapshot.val().isAdmin;
+    var currentScore = snapshot.val().currentScore;
+    console.log(currentScore);
+    $('#currentScore').html(currentScore);
 
     // 如果分區變了，顯示貼文列表
     if(section != snapshot.val().section){
@@ -142,7 +149,7 @@ function showAllUsers(containerElement){
   usersRef.on('child_changed', function(data) {
     console.log("child_changed");
     // 如果變更的是admin的欄位，就忽略
-    if(data.key == "admin")
+    if(data.val().isAdmin == true)
       return;
     var userElement = document.getElementById(data.key);
     userElement.getElementsByClassName('username')[0].innerHTML = data.val().username;
@@ -383,7 +390,7 @@ function addUser(uid, section){
   if(uid == "")
     return;
   var userRef = firebase.database().ref('/users/' + uid);
-  var user = {'username': uid, 'isAdmin': false, 'like': 0, 'dislike': 0, 'postNumber': 0, 'isActive': true, 'section': section, 'currentScore': 0, 'score': 0};
+  var user = {'username': uid, 'isAdmin': false, 'like': 0, 'dislike': 0, 'postNumber': 0, 'replyNumber': 0, 'isActive': true, 'section': section, 'currentScore': 0, 'score': 0};
   userRef.update(user);
 }
 
@@ -412,10 +419,45 @@ function addChangeSideLog(ratingScore){
   var logRef = firebase.database().ref('/users/' + uid + '/changeLogs/' + newLogKey);
   logRef.update(log);
   firebase.database().ref('/users/' + uid).update({"currentScore": ratingScore});
+  $('#currentScore').html(ratingScore);
 
   // TODO: 也幫被贊同/不贊同的user，增加一筆改變別人立場的紀錄
   var userRef = firebase.database().ref('/users/' + tempLog.byWho);
 }
 
-// TODO: 增加隨時更新user狀態/更新post/like數/被回覆數/對誰回覆
+function mergeAllUsers(){
+  firebase.database().ref("/users/").once("value", function(snapshot) {
+    snapshot.forEach(function(child) {
+      child.ref.update({
+        'section': 'C'
+      });
+    });
+  });
+  $('#mergeBtn').hide();
+  $('#splitBtn').show();
+}
+
+function splitAllUsers(){
+  var THRESHOLD = 15;
+  var section;
+  firebase.database().ref("/users/").once("value", function(snapshot) {
+    snapshot.forEach(function(child) {
+      if(child.val().currentScore > THRESHOLD)
+        section = 'A';
+      else if(child.val().currentScore < THRESHOLD)
+        section = 'B';
+      else if(child.val().currentScore < THRESHOLD){
+        Math.floor(Math.random() * 2)? section = 'A' : section = 'B';
+      }else{
+        section = 'C';
+      }
+
+      child.ref.update({
+        'section': section
+      });
+    });
+  });
+  $('#mergeBtn').show();
+  $('#splitBtn').hide();
+}
 

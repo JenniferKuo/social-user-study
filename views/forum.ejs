@@ -22,12 +22,23 @@
           <% if (username) { %>
           <span class="nav-link">目前登入者: <span id="id-input"><%= username %></span></span>
         </li>
+        <% if (!isAdmin) { %>
+        <li class="nav-item active">
+          <a class="nav-link">目前立場分數：<span id="currentScore"></span></a>
+        </li>
+        <% } %>
         <% if (isAdmin) { %>
         <li class="nav-item">
           <a class="nav-link" href="javascript: switchSection()">切換分區</a>
         </li>
+        <li class="nav-item" id="mergeBtn">
+          <a class="nav-link" href="javascript: mergeAllUsers()">合併聊天室</a>
+        </li>
+        <li class="nav-item" id="splitBtn" style="display: none">
+          <a class="nav-link" href="javascript: splitAllUsers()">重新分發</a>
+        </li>
         <li class="nav-item">
-          <a class="nav-link" href="javascript: endExperiment()">結束實驗</a>
+          <a class="nav-link" href="javascript: endExperiment()">結束遊戲</a>
         </li>
         <% } %>
         <li class="nav-item">

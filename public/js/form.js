@@ -111,9 +111,10 @@ function showResults(){
         }
         ans.push(answerContainers[i].querySelector('input[name=question'+i+']:checked').value);
         // 加總選項分數
-		sum += parseInt((answerContainers[i].querySelector('input[name=question'+i+']:checked') || 0).value);
+		// sum += parseInt((answerContainers[i].querySelector('input[name=question'+i+']:checked') || 0).value);
     }
-    
-    // TODO: 儲存到資料庫或csv
+    // TODO: 目前只看第一題的分數
+    sum = parseInt((answerContainers[0].querySelector('input[name=question'+0+']:checked').value));
+    console.log(sum);
     sendResult(ans, sum);
 }

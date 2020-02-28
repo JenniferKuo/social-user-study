@@ -88,7 +88,8 @@ $(document).ready( function() {
 
 function disablePost(){
     document.getElementById("disableArea").appendChild(document.getElementById("message-form"));
-    document.getElementById("message-input").innerHTML = "您已被暫時禁止發言";
+    document.getElementById("message-input").innerHTML = "因為您成為了影響力節點，已經完成了階段性任務，請您在位子上安靜稍待片刻";
+    alert("因為您成為了影響力節點，已經完成了階段性任務，請您在位子上安靜稍待片刻");
 }
 
 function enablePost(){

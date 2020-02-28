@@ -32,7 +32,29 @@ var DB = {
       for(var i=from; i<=to; i++){
         userRef.child(i).remove();
       }
-      cb(from);
+      cb("Delete user successfully");
+    },
+    resetUser: function(cb){
+      firebase.database().ref("/users/").once("value", function(snapshot) {
+        snapshot.forEach(function(child) {
+          child.ref.update({
+            'like': 0, 
+            'dislike': 0, 
+            'postNumber': 0, 
+            'replyNumber': 0, 
+            'isActive': true,
+            'score': 0, 
+            'currentScore': 0, 
+          });
+          if(!child.val().isAdmin){
+            child.ref.update({
+              'section': null,
+              'changeLogs': null
+            });
+          }
+        });
+        cb("Reset all users successfully");
+      });
     },
     addPost: function (post) {
           var newPostKey = firebase.database().ref().child('posts').push().key;

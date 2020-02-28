@@ -176,7 +176,7 @@ app.post('/addUser', function(req, res) {
     var users = {};
     // 更新firebase的user資訊
     for(var i=from; i<=to; i++){
-        var user = {'username': i, 'isAdmin': false, 'like': 0, 'dislike': 0, 'postNumber': 0, 'isActive': true};
+        var user = {'username': i, 'isAdmin': false, 'like': 0, 'dislike': 0, 'postNumber': 0, 'replyNumber': 0, 'isActive': true};
         users[i] = user;
     }
     console.log(from + to);
@@ -194,6 +194,17 @@ app.post('/deleteUser', function(req, res) {
     var to = parseInt(req.body.idTo);
     // 更新firebase的user資訊
     db.deleteUser(from, to, function(data){
+        console.log(data);
+        res.send({
+            status: 'SUCCESS'
+        });
+    });
+})
+
+// 刪除使用者
+app.post('/resetUser', function(req, res) {
+    // 更新firebase的user資訊
+    db.resetUser(function(data){
         console.log(data);
         res.send({
             status: 'SUCCESS'
@@ -286,14 +297,20 @@ app.post('/sendResult', function(req, res) {
     var section;
     console.log(score);
 
-    // TODO: 中間的改成random
     if(score > THRESHOLD){
         section = "A";
-    }else{
+    }else if(score < THRESHOLD){
         section = "B";
+    }else{
+        // 隨機分配中間立場
+        var random = Math.floor(Math.random() * 2); // 0 or 1
+        if(random == 0){
+            section = "A";
+        }else{
+            section = "B";
+        }
     }
     
-    // TODO: 更改用戶資料
     db.setUserSection(req.session.username, section, score, function(err){
         if(err){
             
