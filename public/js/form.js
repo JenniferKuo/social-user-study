@@ -60,7 +60,7 @@ var myQuestions = [
         ],
     },
     {
-		question: "",
+		question: "7. 我總是聚會上炒熱氣氛的人",
 		options: [
             {5: '非常同意'},
             {4: '同意'},
@@ -70,7 +70,7 @@ var myQuestions = [
         ],
     },
     {
-		question: "",
+		question: "8. 我對人感興趣",
 		options: [
             {5: '非常同意'},
             {4: '同意'},
@@ -80,7 +80,7 @@ var myQuestions = [
         ],
     },
     {
-		question: "",
+		question: "9. 我喜歡躲在人群的背後，不喜歡引人注目",
 		options: [
             {5: '非常同意'},
             {4: '同意'},
@@ -90,7 +90,7 @@ var myQuestions = [
         ],
     },
     {
-		question: "",
+		question: "10. 我不太健談",
 		options: [
             {5: '非常同意'},
             {4: '同意'},
@@ -100,7 +100,7 @@ var myQuestions = [
         ],
     },
     {
-		question: "",
+		question: "11. 我不喜歡被別人注意",
 		options: [
             {5: '非常同意'},
             {4: '同意'},
@@ -110,7 +110,7 @@ var myQuestions = [
         ],
     },
     {
-		question: "",
+		question: "12. 我常抽空幫助別人",
 		options: [
             {5: '非常同意'},
             {4: '同意'},
@@ -120,7 +120,7 @@ var myQuestions = [
         ],
     },
     {
-		question: "",
+		question: "13. 我不愛和陌生人說話",
 		options: [
             {5: '非常同意'},
             {4: '同意'},
@@ -130,7 +130,7 @@ var myQuestions = [
         ],
     },
     {
-		question: "",
+		question: "14. 我讓別人在和我相處時感覺很放鬆",
 		options: [
             {5: '非常同意'},
             {4: '同意'},
