@@ -38,6 +38,7 @@ function writeNewPost(username, content, replyTo, replyContent) {
   personalData['postNumber'] = personalData['postNumber'] + 1;
   uploadPersonalData(uid);
 
+
   if(replyTo != ""){
     usersTotalData[replyTo].replyNumber = parseInt(usersTotalData[replyTo].replyNumber) + 1;
     uploadUsersTotalData();
@@ -71,6 +72,8 @@ function initialUserData(){
       isActive = snapshot.val().isActive;
       isActive ? enablePost() : disablePost();
     }
+    // 監聽實驗是否暫停
+    isExperimentPause();
     // 監聽實驗是否結束
     isExperimentEnd();
   });
@@ -88,17 +91,41 @@ function isExperimentEnd(){
   });
 }
 
+function isExperimentPause(){
+  firebase.database().ref('isPause').on('value', function(snapshot){
+    var isPause = snapshot.val();
+    if(isPause){
+      $('.container').hide();
+      $('.msg').show();
+    }else{
+      $('.container').show();
+      $('.msg').hide();
+    }
+  });
+}
+
 // 開始實驗，將所有人轉至另一問卷頁面
 function startExperiment(){
   firebase.database().ref().update({'isEnd': false}).then(() => {
     window.location.href = "/";
   });
-  
 }
 
 // 結束實驗，將所有人轉至另一問卷頁面
 function endExperiment(){
   firebase.database().ref().update({'isEnd': true});
+}
+
+// 暫停實驗
+function pauseExperiment(){
+  console.log("pause");
+  firebase.database().ref().update({'isPause': true});
+}
+
+// 繼續實驗
+function resumeExperiment(){
+  console.log("resume");
+  firebase.database().ref().update({'isPause': false});
 }
 
 function uploadPersonalData(uid){
@@ -246,7 +273,6 @@ function showAllPost(containerElement){
     postsRef.on('child_removed', function(data) {
       var postElement = document.getElementById(data.key);
       postElement.parentElement.removeChild(postElement);
-      // TODO: 如果貼文數有變化，更新該user的貼文統計資料
     });
 }
 
@@ -390,7 +416,7 @@ function addUser(uid, section){
   if(uid == "")
     return;
   var userRef = firebase.database().ref('/users/' + uid);
-  var user = {'username': uid, 'isAdmin': false, 'like': 0, 'dislike': 0, 'postNumber': 0, 'replyNumber': 0, 'isActive': true, 'section': section, 'currentScore': 0, 'score': 0};
+  var user = {'username': uid, 'isAdmin': false, 'like': 0, 'dislike': 0, 'postNumber': 0, 'replyNumber': 0, 'affectNumber': 0, 'isActive': true, 'section': section, 'currentScore': 0, 'score': 0};
   userRef.update(user);
 }
 
@@ -405,6 +431,10 @@ function switchSection(){
   section == "A"? newSection = "B" : newSection = "A";
   var user = {'section': newSection};
   userRef.update(user);
+}
+
+function pauseExperiment(){
+
 }
 
 function addChangeSideLog(ratingScore){
@@ -422,7 +452,9 @@ function addChangeSideLog(ratingScore){
   $('#currentScore').html(ratingScore);
 
   // TODO: 也幫被贊同/不贊同的user，增加一筆改變別人立場的紀錄
-  var userRef = firebase.database().ref('/users/' + tempLog.byWho);
+  usersTotalData[tempLog.byWho].affectNumber = parseInt(usersTotalData[tempLog.byWho].affectNumber) + 1;
+  console.log(usersTotalData[tempLog.byWho].affectNumber);
+  uploadUsersTotalData();
 }
 
 function mergeAllUsers(){

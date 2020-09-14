@@ -43,6 +43,7 @@ var DB = {
             'postNumber': 0, 
             'replyNumber': 0, 
             'isActive': true,
+            'affectNumber': 0,
             'score': 0, 
             'currentScore': 0, 
           });

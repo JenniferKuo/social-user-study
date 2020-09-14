@@ -114,6 +114,16 @@ function closePanel(){
   $('#userPanel').css("display", "none");
 }
 
+function pause(){
+  if($('.pauseBtn').html() == "暫停遊戲"){
+    $('.pauseBtn').html("繼續遊戲");
+    pauseExperiment();
+  }else{
+    $('.pauseBtn').html("暫停遊戲");
+    resumeExperiment();
+  }
+}
+
 function replyPost(postId){
     $('html, body').animate({
         scrollTop: 0

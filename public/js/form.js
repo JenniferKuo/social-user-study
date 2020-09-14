@@ -1,33 +1,209 @@
-var myQuestions = [];
-// var myQuestions = [
-//     {
-//         "question": "如果現在有兩個全球性的計畫項目，一個會給整個社會帶來變革，改善絕大多數人(99%)的生活，一個會拯救少部分的人的生命(1%)，只能選其一，從整個人類社會的角度出發，你會選擇改善絕大多數人的生活嗎？",
-//         "options": [
-//             {"5": "非常同意"},
-//             {"4": "同意"},
-//             {"3": "沒意見"},
-//             {"2": "不同意"},
-//             {"1": "非常不同意"}
-//         ]
-//     }
-// ];
+var myQuestions = [
+	{
+		question: "1.	「死刑過於殘酷，違反人權」您是否支持此論點呢?",
+		options: [
+            {5: '非常同意'},
+            {4: '同意'},
+            {3: '沒意見'},
+            {2: '不同意'},
+            {1: '非常不同意'}
+        ],
+    }
+	{
+		question: "2.	「有冤獄的可能性，冤獄、誤判是無法挽回的」您是否支持此論點呢?",
+		options: [
+            {5: '非常同意'},
+            {4: '同意'},
+            {3: '沒意見'},
+            {2: '不同意'},
+            {1: '非常不同意'}
+        ],
+    },
+    {
+		question: "3.	「人有教化之可能性，應發揮在教育精神」您是否支持此論點呢?",
+		options: [
+            {5: '非常同意'},
+            {4: '同意'},
+            {3: '沒意見'},
+            {2: '不同意'},
+            {1: '非常不同意'}
+        ],
+    },
+    {
+		question: "4.	「死刑無法嚇阻犯罪」您是否支持此論點呢?",
+		options: [
+            {5: '非常同意'},
+            {4: '同意'},
+            {3: '沒意見'},
+            {2: '不同意'},
+            {1: '非常不同意'}
+        ],
+    },
+    {
+        question: "5.	「死刑不符合比例原則，終身監禁可取代」您是否支持此論點呢?意指: 終身監禁也能達到跟死刑類似的效果，此時就不該用殺人性命這種最嚴酷的手段。",
+		options: [
+            {5: '非常同意'},
+            {4: '同意'},
+            {3: '沒意見'},
+            {2: '不同意'},
+            {1: '非常不同意'}
+        ],
+    },
+    {
+		question: "6.	「殺人償命，一命抵一命」您是否支持此論點呢?",
+		options: [
+            {5: '非常同意'},
+            {4: '同意'},
+            {3: '沒意見'},
+            {2: '不同意'},
+            {1: '非常不同意'}
+        ],
+    },
+    {
+		question: "",
+		options: [
+            {5: '非常同意'},
+            {4: '同意'},
+            {3: '沒意見'},
+            {2: '不同意'},
+            {1: '非常不同意'}
+        ],
+    },
+    {
+		question: "",
+		options: [
+            {5: '非常同意'},
+            {4: '同意'},
+            {3: '沒意見'},
+            {2: '不同意'},
+            {1: '非常不同意'}
+        ],
+    },
+    {
+		question: "",
+		options: [
+            {5: '非常同意'},
+            {4: '同意'},
+            {3: '沒意見'},
+            {2: '不同意'},
+            {1: '非常不同意'}
+        ],
+    },
+    {
+		question: "",
+		options: [
+            {5: '非常同意'},
+            {4: '同意'},
+            {3: '沒意見'},
+            {2: '不同意'},
+            {1: '非常不同意'}
+        ],
+    },
+    {
+		question: "",
+		options: [
+            {5: '非常同意'},
+            {4: '同意'},
+            {3: '沒意見'},
+            {2: '不同意'},
+            {1: '非常不同意'}
+        ],
+    },
+    {
+		question: "",
+		options: [
+            {5: '非常同意'},
+            {4: '同意'},
+            {3: '沒意見'},
+            {2: '不同意'},
+            {1: '非常不同意'}
+        ],
+    },
+    {
+		question: "",
+		options: [
+            {5: '非常同意'},
+            {4: '同意'},
+            {3: '沒意見'},
+            {2: '不同意'},
+            {1: '非常不同意'}
+        ],
+    },
+    {
+		question: "",
+		options: [
+            {5: '非常同意'},
+            {4: '同意'},
+            {3: '沒意見'},
+            {2: '不同意'},
+            {1: '非常不同意'}
+        ],
+    },
+    {
+		question: "",
+		options: [
+            {5: '非常同意'},
+            {4: '同意'},
+            {3: '沒意見'},
+            {2: '不同意'},
+            {1: '非常不同意'}
+        ],
+    },
+    {
+		question: "",
+		options: [
+            {5: '非常同意'},
+            {4: '同意'},
+            {3: '沒意見'},
+            {2: '不同意'},
+            {1: '非常不同意'}
+        ],
+    },
+    {
+		question: "",
+		options: [
+            {5: '非常同意'},
+            {4: '同意'},
+            {3: '沒意見'},
+            {2: '不同意'},
+            {1: '非常不同意'}
+        ],
+    },
+    {
+		question: "",
+		options: [
+            {5: '非常同意'},
+            {4: '同意'},
+            {3: '沒意見'},
+            {2: '不同意'},
+            {1: '非常不同意'}
+        ],
+    },
+    {
+		question: "",
+		options: [
+            {5: '非常同意'},
+            {4: '同意'},
+            {3: '沒意見'},
+            {2: '不同意'},
+            {1: '非常不同意'}
+        ],
+    },
+    {
+		question: "",
+		options: [
+            {5: '非常同意'},
+            {4: '同意'},
+            {3: '沒意見'},
+            {2: '不同意'},
+            {1: '非常不同意'}
+        ],
+    }     
+];
 
 $(document).ready( function() {
-    initialQuestion();
+    showQuestions(myQuestions, document.getElementById('question-container'));
 });
-
-function initialQuestion(){
-    $.ajax({
-        async: true,
-        crossDomain: true,
-        url: "/getFormJson",
-        'Access-Control-Allow-Origin': '*',
-        success: function(response) {
-            myQuestions = response;
-            showQuestions(myQuestions, document.getElementById('question-container'));
-      },
-    });
-}
 
 function showQuestions(questions, quizContainer){
     var output = [];
@@ -71,6 +247,7 @@ function sendResult(ans, score){
         data: {
             "id": id,
             "answers": ans.toString()
+            // 自動偵測填答完畢
         },
         'Access-Control-Allow-Origin': '*',
         success: function(response) {
@@ -111,10 +288,9 @@ function showResults(){
         }
         ans.push(answerContainers[i].querySelector('input[name=question'+i+']:checked').value);
         // 加總選項分數
-		// sum += parseInt((answerContainers[i].querySelector('input[name=question'+i+']:checked') || 0).value);
+		sum += parseInt((answerContainers[i].querySelector('input[name=question'+i+']:checked') || 0).value);
     }
-    // TODO: 目前只看第一題的分數
-    sum = parseInt((answerContainers[0].querySelector('input[name=question'+0+']:checked').value));
-    console.log(sum);
+    
+    // TODO: 儲存到資料庫或csv
     sendResult(ans, sum);
 }

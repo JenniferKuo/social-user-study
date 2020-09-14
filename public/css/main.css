@@ -120,6 +120,11 @@ body{
     position: relative;
   }
 
+  .msg{
+    top: 45vh;
+    position: relative;
+  }
+
   /* user list panel */
   .user-btn{
     color: lightgrey;
