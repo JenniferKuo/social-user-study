@@ -339,6 +339,8 @@ function showResults(){
     var ans = [];
     var sum = 0;
 
+    // 最後八題不列入計算
+    var excludeQuestion = 8;
 	// 檢查每個問題選項
 	for(var i=0; i<questions.length; i++){
         // 檢查是否每個問題都有回答
@@ -348,7 +350,8 @@ function showResults(){
         }
         ans.push(answerContainers[i].querySelector('input[name=question'+i+']:checked').value);
         // 加總選項分數
-		sum += parseInt((answerContainers[i].querySelector('input[name=question'+i+']:checked') || 0).value);
+        if (i<questions.length-excludeQuestion)
+		    sum += parseInt((answerContainers[i].querySelector('input[name=question'+i+']:checked') || 0).value);
     }
     
     // TODO: 儲存到資料庫或csv
