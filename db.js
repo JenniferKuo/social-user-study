@@ -45,7 +45,8 @@ var DB = {
             'isActive': true,
             'affectNumber': 0,
             'score': 0, 
-            'currentScore': 0, 
+            'currentScore': 0,
+            'totalScore': 0 
           });
           if(!child.val().isAdmin){
             child.ref.update({

@@ -267,6 +267,8 @@ function showAllPost(containerElement){
       usersTotalData[data.val().author].like = data.child("likeUsers").numChildren() - 1;
       // 更新user的dislike數
       usersTotalData[data.val().author].dislike = data.child("dislikeUsers").numChildren() - 1;
+      // 更新讚數+改變立場總分
+      usersTotalData[data.val().author].totalScore = parseInt(usersTotalData[data.val().author].like) + parseInt(usersTotalData[data.val().author].affectNumber);
       uploadUsersTotalData();
     });
     // posts欄位如果有被移除貼文
@@ -416,7 +418,7 @@ function addUser(uid, section){
   if(uid == "")
     return;
   var userRef = firebase.database().ref('/users/' + uid);
-  var user = {'username': uid, 'isAdmin': false, 'like': 0, 'dislike': 0, 'postNumber': 0, 'replyNumber': 0, 'affectNumber': 0, 'isActive': true, 'section': section, 'currentScore': 0, 'score': 0};
+  var user = {'username': uid, 'isAdmin': false, 'like': 0, 'dislike': 0, 'postNumber': 0, 'replyNumber': 0, 'affectNumber': 0, 'isActive': true, 'section': section, 'currentScore': 0, 'score': 0, 'totalScore': 0};
   userRef.update(user);
 }
 
@@ -451,9 +453,12 @@ function addChangeSideLog(ratingScore){
   firebase.database().ref('/users/' + uid).update({"currentScore": ratingScore});
   $('#currentScore').html(ratingScore);
 
-  // TODO: 也幫被贊同/不贊同的user，增加一筆改變別人立場的紀錄
+  // 也幫被贊同/不贊同的user，增加一筆改變別人立場的紀錄
   usersTotalData[tempLog.byWho].affectNumber = parseInt(usersTotalData[tempLog.byWho].affectNumber) + 1;
+  // 該user的總分(改變別人立場+讚數)加一
+  usersTotalData[tempLog.byWho].totalScore = parseInt(usersTotalData[tempLog.byWho].totalScore) + 1;
   console.log(usersTotalData[tempLog.byWho].affectNumber);
+  console.log(usersTotalData[tempLog.byWho].totalScore);
   uploadUsersTotalData();
 }
 

@@ -171,6 +171,10 @@ function sortingClicked(){
       $('.sorting').html("Score");
       break;
     case 'currentScore':
+      sortingBy = "totalScore";
+      $('.sorting').html("Total");
+      break;
+    case 'totalScore': // 得到的讚和改變立場的人數加總
       sortingBy = "like";
       $('.sorting').html("Likes");
       break;
