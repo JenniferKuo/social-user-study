@@ -118,7 +118,7 @@ app.get('/editForm', function (req, res) {
 
 // 拿到問卷資料
 app.get('/getFormJson', function (req, res) {
-    jsonReader('./form.json', (err, result) => {
+    jsonReader('form.json', (err, result) => {
         if (err) {
             console.log(err);
             return;
@@ -145,7 +145,7 @@ app.post('/setFormJson', function (req, res) {
 
 // 拿到問卷2資料
 app.get('/getForm2Json', function (req, res) {
-    jsonReader('./form2.json', (err, result) => {
+    jsonReader('form2.json', (err, result) => {
         if (err) {
             console.log(err);
             return;
@@ -293,6 +293,7 @@ app.post('/login', function(req, res) {
 })
 
 app.post('/sendResult', function(req, res) {
+    // 分組
     var score = req.body.score;
     var section;
     console.log(score);

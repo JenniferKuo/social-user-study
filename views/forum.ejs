@@ -105,7 +105,9 @@
         </div>
         <!-- 警告區塊 -->
         <div id="alert"></div>
+        <% if (isAdmin) { %>
         <div ><span>只對某ID顯示</span><input type="text" name="name" class="form-control col-1" value="" id="displayId"></div>
+        <% } %>
         <button id="submit-btn" class="btn btn-primary">送出</button>
       </form>
     </div>

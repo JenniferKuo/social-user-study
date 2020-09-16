@@ -297,9 +297,10 @@ function showQuestions(questions, quizContainer){
 }
 
 function sendResult(ans, score){
-    var data = {"score": score};
     let id = $('#id-input').text();
     var url = "https://script.google.com/macros/s/AKfycbyABZt9bsN8ghP5LCLGeyQwJ1zp5YGbCPxjpLYFVQMU-ExnSVP7/exec";
+    console.log(id);
+    console.log(ans);
     $.ajax({
         async: true,
         crossDomain: true,
@@ -311,12 +312,15 @@ function sendResult(ans, score){
         },
         'Access-Control-Allow-Origin': '*',
         success: function(response) {
+            // 回傳結果為問題的index，檢查他在這題的選項
+            var questionIndex = JSON.parse(response).maxIndex;
+            var score = ans[questionIndex];
             $.ajax({
                 async: true,
                 crossDomain: true,
                 url: "/sendResult",
                 type: 'post',
-                data: JSON.stringify(data),
+                data: JSON.stringify({"score": score}),
                 headers: {
                     'Content-Type': 'application/json',
                     'Access-Control-Allow-Origin': '*'
@@ -337,6 +341,7 @@ function showResults(){
 	var quizContainer = document.getElementById('question-container');
     var answerContainers = quizContainer.querySelectorAll('.options');
     var ans = [];
+    var diverse = [];
     var sum = 0;
 
     // 最後八題不列入計算
@@ -357,3 +362,4 @@ function showResults(){
     // TODO: 儲存到資料庫或csv
     sendResult(ans, sum);
 }
+
