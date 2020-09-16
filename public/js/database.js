@@ -13,11 +13,12 @@ var firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
-function writeNewPost(username, content, replyTo, replyContent) {
+function writeNewPost(username, content, replyTo, replyContent, onlyDisplayTo) {
   // Get a key for a new Post.
   var newPostKey = firebase.database().ref().child('posts/' + section).push().key;
 
   // A post entry.
+  console.log(username);
   var postData = {
     author: username,
     postId: newPostKey,
@@ -156,7 +157,7 @@ function showAllUsers(containerElement){
       return;
     // 只顯示不是admin 和這一分區的帳號
     if(!data.val().isAdmin && data.val().section == section){
-      containerElement.insertBefore(createUserElement(data.key, data.val().isActive, data.val().like, data.val().currentScore), 
+      containerElement.insertBefore(createUserElement(data.key, data.val().isActive, data.val().like, data.val().currentScore, data.val().totalScore), 
       containerElement.firstChild);
     }
     // 另一區的user列表
@@ -203,9 +204,10 @@ function showAllUsers(containerElement){
 }
 
 // 回傳一個user欄位的html
-function createUserElement(uid, isActive, like, currentScore) {
+function createUserElement(uid, isActive, like, currentScore, totalScore) {
   var html = '<li class="nav-item" id="'+ uid +'">' +
   '<a class="nav-link" href="javascript: void(0)">' +
+  '<i class="fa fa-circle" style="color:#ff9900"></i>' + '<span class="pr-1 score" style="color:grey">' + totalScore + '</span>' +
     '<i class="fas fa-thumbs-up" style="color:grey"></i>' + '<span class="pr-1 like" style="color:grey">' + like + '</span>' +
     '<i class="fa fa-circle" style="color:#36c1b6"></i>' + '<span class="pr-1 score" style="color:grey">' + currentScore + '</span>' +
     '<text class="username">' + uid + '</text>' +
@@ -284,7 +286,6 @@ function updateUsersTotalData(){
   var usersRef = firebase.database().ref('users');
   usersRef.on('value', function(snapshot){
     usersTotalData = snapshot.val();
-    console.log("get");
     console.log(usersTotalData);
   });
 }

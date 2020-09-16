@@ -23,15 +23,15 @@ $(document).ready( function() {
             var text = messageInput.val();
 
             if (text) {
-                writeNewPost(uid, text, $('#reply-user').html(), $('#reply-content').html());
+                writeNewPost(uid, text, $('#reply-user').html(), $('#reply-content').html(), $('#displayId').val());
                 // 清空輸入欄位
                 messageInput.val('');
                 // 清空回覆欄位
                 $('#reply-container').hide();
                 $('#reply-user').empty();
                 $('#reply-content').empty();
+                $('#displayId').val("");
             }else{
-                alert(section);
                 $('.alert').remove();
                 var html = '<div class="alert alert-warning alert-dismissible fade show" role="alert">留言欄位不可為空<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
                 $('#alert').append(html);
@@ -89,7 +89,7 @@ $(document).ready( function() {
 function disablePost(){
     document.getElementById("disableArea").appendChild(document.getElementById("message-form"));
     document.getElementById("message-input").innerHTML = "因為您成為了影響力節點，已經完成了階段性任務，請您在位子上安靜稍待片刻";
-    alert("因為您成為了影響力節點，已經完成了階段性任務，請您在位子上安靜稍待片刻");
+    alert("你目前被靜音，請靜待指示。");
 }
 
 function enablePost(){
