@@ -29,7 +29,8 @@ function writeNewPost(username, content, replyTo, replyContent, onlyDisplayTo) {
     dislikeUsers: {"default": true},
     likeUsers: {"default": true},
     replyTo: replyTo,
-    replyContent: replyContent
+    replyContent: replyContent,
+    onlyDisplayTo: onlyDisplayTo
   };
   // Write the new post's data simultaneously in the posts list and the user's post list.
   var updates = {};
@@ -241,11 +242,15 @@ function showAllPost(containerElement){
 
     // posts 欄位如果新增
     postsRef.on('child_added', function(data) {
-      console.log("post added");
-      var author = data.val().author || '匿名';
-      // 把新貼文的html元素插入再DIV中最新一個child之前
-      containerElement.insertBefore(createPostElement(data.key, data.val().replyTo, data.val().replyContent, data.val().content, author, data.val().like, data.val().dislike, data.val().likeUsers, data.val().dislikeUsers, data.val().createTime), 
-      containerElement.firstChild);
+      // 如果不限制貼文 或是顯示給特定使用者看並且是自己 或者是管理員才能看見
+      var username = $('#id-input').text();
+      if(data.val().onlyDisplayTo == "" || data.val().onlyDisplayTo == username || username.match("admin")!=null){
+        console.log("post added");
+        var author = data.val().author || '匿名';
+        // 把新貼文的html元素插入再DIV中最新一個child之前
+        containerElement.insertBefore(createPostElement(data.key, data.val().replyTo, data.val().replyContent, data.val().content, author, data.val().like, data.val().dislike, data.val().likeUsers, data.val().dislikeUsers, data.val().createTime), 
+        containerElement.firstChild);
+      }
     });
     // posts欄位內容如果更新
     postsRef.on('child_changed', function(data) {

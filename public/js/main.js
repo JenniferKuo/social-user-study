@@ -23,9 +23,13 @@ $(document).ready( function() {
             var text = messageInput.val();
 
             if (text) {
-                writeNewPost(uid, text, $('#reply-user').html(), $('#reply-content').html(), $('#displayId').val());
+                var displayId = "";
+                // 如果是admin才能設定只顯示給某人看
+                if($('#displayId').length > 0) {
+                  displayId = $('#displayId').val();
+                }
+                writeNewPost(uid, text, $('#reply-user').html(), $('#reply-content').html(), displayId);
                 // 清空輸入欄位
-                messageInput.val('');
                 // 清空回覆欄位
                 $('#reply-container').hide();
                 $('#reply-user').empty();
