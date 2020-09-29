@@ -163,7 +163,7 @@ function showAllUsers(containerElement){
     }
     // 另一區的user列表
     else if(!data.val().isAdmin && data.val().section != section){
-      secondContainer.insertBefore(createUserElement(data.key, data.val().isActive, data.val().like, data.val().currentScore), 
+      secondContainer.insertBefore(createUserElement(data.key, data.val().isActive, data.val().like, data.val().currentScore, data.val().totalScore), 
       secondContainer.firstChild);
     }
   });

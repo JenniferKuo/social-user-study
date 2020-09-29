@@ -176,7 +176,7 @@ app.post('/addUser', function(req, res) {
     var users = {};
     // 更新firebase的user資訊
     for(var i=from; i<=to; i++){
-        var user = {'username': i, 'isAdmin': false, 'like': 0, 'dislike': 0, 'postNumber': 0, 'replyNumber': 0, 'isActive': true};
+        var user = {'username': i, 'isAdmin': false, 'like': 0, 'dislike': 0, 'postNumber': 0, 'replyNumber': 0, 'isActive': true,  'affectNumber': 0, 'currentScore': 0, 'totalScore': 0};
         users[i] = user;
     }
     console.log(from + to);
