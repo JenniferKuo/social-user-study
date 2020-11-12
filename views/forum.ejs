@@ -88,13 +88,13 @@
     </nav>
   <% } %>
   <div class="msg text-center">
-    <h1>中場休息</h1>
+    <!-- <h1>中場休息</h1> -->
   </div>
   <div class="container">
     <!-- 發表留言區塊 -->
     <div class="my-3 p-3 bg-white rounded shadow-sm">
       <fieldset id="disableArea" disabled></fieldset>
-      <form id="message-form" action="#">
+      <div id="message-form">
         <div class="form-group">
           <h5 class="border-bottom border-gray pb-2 mb-2">發表留言</h5>
           <div class="small text-muted quote" id="reply-container">
@@ -109,7 +109,7 @@
         <div ><span>只對某ID顯示</span><input type="text" name="name" class="form-control col-1" value="" id="displayId"></div>
         <% } %>
         <button id="submit-btn" class="btn btn-primary">送出</button>
-      </form>
+        </div>
     </div>
     <div class="my-3 p-3 bg-white rounded shadow-sm">
       <h5 class="border-bottom border-gray pb-2 mb-0">留言列表</h5>

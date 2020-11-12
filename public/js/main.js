@@ -15,37 +15,64 @@ $(document).ready( function() {
     // 隱藏回覆某人區塊
     $('#reply-container').hide();
 
-    window.addEventListener('load', function() {
-
-        // 按下發表留言按鈕
-        submitBtn.click(function(e) {
-            e.preventDefault();
-            var text = messageInput.val();
-
-            if (text) {
-                var displayId = "";
-                // 如果是admin才能設定只顯示給某人看
-                if($('#displayId').length > 0) {
-                  displayId = $('#displayId').val();
-                }
-                writeNewPost(uid, text, $('#reply-user').html(), $('#reply-content').html(), displayId);
-                // 清空輸入欄位
-                // 清空回覆欄位
-                $('#reply-container').hide();
-                $('#reply-user').empty();
-                $('#reply-content').empty();
-                $('#displayId').val("");
-            }else{
-                $('.alert').remove();
-                var html = '<div class="alert alert-warning alert-dismissible fade show" role="alert">留言欄位不可為空<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
-                $('#alert').append(html);
-                setTimeout(()=>{
-                    $('.alert').fadeOut('slow');
-                }, 2000);
-                
-            }
-        });
+    $(document).on('click','#submit-btn',function(){
+    // 按下發表留言按鈕
+      console.log("click");
+      var text = messageInput.val();
+      if (text) {
+          var displayId = "";
+          // 如果是admin才能設定只顯示給某人看
+          if($('#displayId').length > 0) {
+            displayId = $('#displayId').val();
+          }
+          writeNewPost(uid, text, $('#reply-user').html(), $('#reply-content').html(), displayId);
+          // 清空輸入欄位
+          // 清空回覆欄位
+          $('#reply-container').hide();
+          $('#reply-user').empty();
+          $('#reply-content').empty();
+          $('#displayId').val("");
+      }else{
+          $('.alert').remove();
+          var html = '<div class="alert alert-warning alert-dismissible fade show" role="alert">留言欄位不可為空<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+          $('#alert').append(html);
+          setTimeout(()=>{
+              $('.alert').fadeOut('slow');
+          }, 2000);
+      }
     });
+    // window.addEventListener('load', function() {
+
+    //     // 按下發表留言按鈕
+    //     submitBtn.click(function(e) {
+    //         e.preventDefault();
+    //         console.log("click");
+    //         var text = messageInput.val();
+
+    //         if (text) {
+    //             var displayId = "";
+    //             // 如果是admin才能設定只顯示給某人看
+    //             if($('#displayId').length > 0) {
+    //               displayId = $('#displayId').val();
+    //             }
+    //             writeNewPost(uid, text, $('#reply-user').html(), $('#reply-content').html(), displayId);
+    //             // 清空輸入欄位
+    //             // 清空回覆欄位
+    //             $('#reply-container').hide();
+    //             $('#reply-user').empty();
+    //             $('#reply-content').empty();
+    //             $('#displayId').val("");
+    //         }else{
+    //             $('.alert').remove();
+    //             var html = '<div class="alert alert-warning alert-dismissible fade show" role="alert">留言欄位不可為空<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+    //             $('#alert').append(html);
+    //             setTimeout(()=>{
+    //                 $('.alert').fadeOut('slow');
+    //             }, 2000);
+                
+    //         }
+    //     });
+    // });
 
      /* 1. Visualizing things on Hover - See next part for action on click */
   $('#stars li').on('mouseover', function(){

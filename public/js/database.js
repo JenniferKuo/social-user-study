@@ -208,10 +208,10 @@ function showAllUsers(containerElement){
 function createUserElement(uid, isActive, like, currentScore, totalScore) {
   var html = '<li class="nav-item" id="'+ uid +'">' +
   '<a class="nav-link" href="javascript: void(0)">' +
+  '<text class="username">' + uid + '</text>' +
   '<i class="fa fa-circle" style="color:#ff9900"></i>' + '<span class="pr-1 score" style="color:grey">' + totalScore + '</span>' +
     '<i class="fas fa-thumbs-up" style="color:grey"></i>' + '<span class="pr-1 like" style="color:grey">' + like + '</span>' +
     '<i class="fa fa-circle" style="color:#36c1b6"></i>' + '<span class="pr-1 score" style="color:grey">' + currentScore + '</span>' +
-    '<text class="username">' + uid + '</text>' +
     '<button class="btn user-btn p-1 mute-btn" onclick="disableUser(\''+ uid +'\')"><i class="fas fa-volume-mute"></i></button>' +
     '<button class="btn user-btn p-1 volume-btn" onclick="enableUser(\''+ uid +'\')"><i class="fas fa-volume-up"></i></button>' +
     '<button class="btn user-btn p-1 delete-btn" onclick="deleteUser(\''+ uid +'\')"><i class="fas fa-times"></i></button>' +

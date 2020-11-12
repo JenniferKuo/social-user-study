@@ -59,6 +59,7 @@ app.get('/', function (req, res) {
         res.redirect('/login');
     }else{
         // 判斷是否是管理員
+        
         var username = req.session.username;
         var isAdmin = req.session.isAdmin;
 
@@ -201,10 +202,21 @@ app.post('/deleteUser', function(req, res) {
     });
 })
 
-// 刪除使用者
+// 重置使用者
 app.post('/resetUser', function(req, res) {
     // 更新firebase的user資訊
     db.resetUser(function(data){
+        console.log(data);
+        res.send({
+            status: 'SUCCESS'
+        });
+    });
+})
+
+//重置使用者數值
+app.post('/resetUserScore', function(req, res) {
+    // 更新firebase的user資訊
+    db.resetUserScore(function(data){
         console.log(data);
         res.send({
             status: 'SUCCESS'

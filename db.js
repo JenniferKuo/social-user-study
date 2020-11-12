@@ -58,6 +58,24 @@ var DB = {
         cb("Reset all users successfully");
       });
     },
+    resetUserScore: function(cb){
+      firebase.database().ref("/users/").once("value", function(snapshot) {
+        snapshot.forEach(function(child) {
+          child.ref.update({
+            'like': 0, 
+            'dislike': 0, 
+            'postNumber': 0, 
+            'replyNumber': 0, 
+            'isActive': true,
+            'affectNumber': 0,
+            'score': 0, 
+            'currentScore': 0,
+            'totalScore': 0 
+          });
+        });
+        cb("Reset all users' score successfully");
+      });
+    },
     addPost: function (post) {
           var newPostKey = firebase.database().ref().child('posts').push().key;
           post.id = newPostKey;
