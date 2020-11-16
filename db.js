@@ -69,8 +69,8 @@ var DB = {
             'isActive': true,
             'affectNumber': 0,
             'score': 0, 
-            'currentScore': 0,
-            'totalScore': 0 
+            'totalScore': 0,
+            'changeLogs': null 
           });
         });
         cb("Reset all users' score successfully");

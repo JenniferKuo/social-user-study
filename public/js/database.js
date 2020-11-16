@@ -36,22 +36,27 @@ function writeNewPost(username, content, replyTo, replyContent, onlyDisplayTo) {
   var updates = {};
   updates['/posts/' + '/' + section + '/' + newPostKey] = postData;
 
+  // TODO
   // 更新自己的貼文總數
   personalData['postNumber'] = personalData['postNumber'] + 1;
   uploadPersonalData(uid);
 
 
   if(replyTo != ""){
-    usersTotalData[replyTo].replyNumber = parseInt(usersTotalData[replyTo].replyNumber) + 1;
-    uploadUsersTotalData();
+    var userData = usersTotalData[replyTo];
+    userData.replyNumber = parseInt(userData.replyNumber) + 1;
+    // usersTotalData[replyTo].replyNumber = parseInt(usersTotalData[replyTo].replyNumber) + 1;
+    uploadUserData(replyTo, userData);
   }
   return firebase.database().ref().update(updates);
 }
 
+// 小心這是全域變數
 var personalData = {};
 
 function initialUserData(){
   // 抓取目前用戶資料
+  // 如果該用戶在firebase的資料有變化 會更新personalData裡的資料
   firebase.database().ref('/users/' + uid).on('value', function(snapshot){
     personalData = snapshot.val();
     isAdmin = snapshot.val().isAdmin;
@@ -130,14 +135,20 @@ function resumeExperiment(){
   firebase.database().ref().update({'isPause': false});
 }
 
+// 上傳當下的使用者的資料到firebase
 function uploadPersonalData(uid){
+  console.log("update personalData");
   firebase.database().ref('/users/' + uid).update(personalData);
+}
+
+function uploadUserData(uid, userData){
+  console.log("update specific user's data");
+  firebase.database().ref('/users/' + uid).update(userData);
 }
 
 function uploadUsersTotalData(){
   firebase.database().ref('/users/').update(usersTotalData).then(function(){
-    console.log("send");
-    console.log(usersTotalData);
+    console.log("upload users total data");
   });
 }
 
@@ -183,6 +194,9 @@ function showAllUsers(containerElement){
     var userElement = document.getElementById(data.key);
     userElement.getElementsByClassName('username')[0].innerHTML = data.val().username;
     userElement.getElementsByClassName('like')[0].innerHTML = data.val().like;
+    // TODO
+    userElement.getElementsByClassName('totalScore')[0].innerHTML = data.val().totalScore;
+    userElement.getElementsByClassName('currentScore')[0].innerHTML = data.val().currentScore;
 
     // 更改按鈕顏色
     if(data.val().isActive){
@@ -209,9 +223,9 @@ function createUserElement(uid, isActive, like, currentScore, totalScore) {
   var html = '<li class="nav-item" id="'+ uid +'">' +
   '<a class="nav-link" href="javascript: void(0)">' +
   '<text class="username">' + uid + '</text>' +
-  '<i class="fa fa-circle" style="color:#ff9900"></i>' + '<span class="pr-1 score" style="color:grey">' + totalScore + '</span>' +
+  '<i class="fa fa-circle" style="color:#ff9900"></i>' + '<span class="pr-1 totalScore" style="color:grey">' + totalScore + '</span>' +
     '<i class="fas fa-thumbs-up" style="color:grey"></i>' + '<span class="pr-1 like" style="color:grey">' + like + '</span>' +
-    '<i class="fa fa-circle" style="color:#36c1b6"></i>' + '<span class="pr-1 score" style="color:grey">' + currentScore + '</span>' +
+    '<i class="fa fa-circle" style="color:#36c1b6"></i>' + '<span class="pr-1 currentScore" style="color:grey">' + currentScore + '</span>' +
     '<button class="btn user-btn p-1 mute-btn" onclick="disableUser(\''+ uid +'\')"><i class="fas fa-volume-mute"></i></button>' +
     '<button class="btn user-btn p-1 volume-btn" onclick="enableUser(\''+ uid +'\')"><i class="fas fa-volume-up"></i></button>' +
     '<button class="btn user-btn p-1 delete-btn" onclick="deleteUser(\''+ uid +'\')"><i class="fas fa-times"></i></button>' +
@@ -245,7 +259,7 @@ function showAllPost(containerElement){
       // 如果不限制貼文 或是顯示給特定使用者看並且是自己 或者是管理員才能看見
       var username = $('#id-input').text();
       if(data.val().onlyDisplayTo == "" || data.val().onlyDisplayTo == username || username.match("admin")!=null){
-        console.log("post added");
+        console.log("post added"); 
         var author = data.val().author || '匿名';
         // 把新貼文的html元素插入再DIV中最新一個child之前
         containerElement.insertBefore(createPostElement(data.key, data.val().replyTo, data.val().replyContent, data.val().content, author, data.val().like, data.val().dislike, data.val().likeUsers, data.val().dislikeUsers, data.val().createTime), 
@@ -269,14 +283,6 @@ function showAllPost(containerElement){
         $('#'+data.key).find('.like').css('color', 'dodgerblue');
       else if(uid in data.val().dislikeUsers)
         $('#'+data.key).find('.dislike').css('color', 'dodgerblue');
-
-      // 更新user的like數
-      usersTotalData[data.val().author].like = data.child("likeUsers").numChildren() - 1;
-      // 更新user的dislike數
-      usersTotalData[data.val().author].dislike = data.child("dislikeUsers").numChildren() - 1;
-      // 更新讚數+改變立場總分
-      usersTotalData[data.val().author].totalScore = parseInt(usersTotalData[data.val().author].like) + parseInt(usersTotalData[data.val().author].affectNumber);
-      uploadUsersTotalData();
     });
     // posts欄位如果有被移除貼文
     postsRef.on('child_removed', function(data) {
@@ -286,12 +292,13 @@ function showAllPost(containerElement){
 }
 
 var usersTotalData = {};
+// 當user底下的資料有變化時，從firebase拿到全部的user資料
 function updateUsersTotalData(){
   // likeUsers, dislikeUsers, replyTo
   var usersRef = firebase.database().ref('users');
   usersRef.on('value', function(snapshot){
     usersTotalData = snapshot.val();
-    console.log(usersTotalData);
+    console.log("update users data from firebase");
   });
 }
 
@@ -365,9 +372,11 @@ function toggleLike(postId, likeValue) {
   var post;
   var postRef = firebase.database().ref('/posts/' + '/' + section + '/' + postId);
 
+  // TODO
   postRef.once('value', function(snapshot) {
     if(snapshot){
       post = snapshot.val();
+      var userData = usersTotalData[post.author];
       switch(likeValue) {
         // 如果是按dislike
         case -1:
@@ -375,15 +384,20 @@ function toggleLike(postId, likeValue) {
           if (post.dislikeUsers && post.dislikeUsers[uid] == undefined) { 
             post.dislike++;
             post.dislikeUsers[uid] = true;
+            // 更新user的dislike數
+            userData.dislike += 1;
           }else if(post.dislikeUsers[uid] != undefined){
             post.dislike--;
             delete post.dislikeUsers[uid];
+            usersData.dislike += 1;
           }
 
           // 如果本來有按like，要把他收回
           if (post.likeUsers && post.likeUsers[uid] != undefined) {
             post.like--;
             delete post.likeUsers[uid];
+            // 更新user的like數
+            userData.like -= 1;
           }
           break;
         // 如果是按like
@@ -392,21 +406,30 @@ function toggleLike(postId, likeValue) {
           if (post.likeUsers && post.likeUsers[uid] == undefined) {
             post.like++;
             post.likeUsers[uid] = true;
+            userData.like += 1;
           }else if(post.likeUsers[uid] != undefined){
             post.like--;
             delete post.likeUsers[uid];
+            userData.like -= 1;
           }
 
           // 如果本來有按dislike，要把他收回
           if (post.dislikeUsers && post.dislikeUsers[uid] != undefined) {
             post.dislike--;
             delete post.dislikeUsers[uid];
+            userData.dislike -= 1;
           }
           break;
       }
       postRef.update(post);
-    }
+      // 更新讚數+改變立場總分
+      userData.totalScore = parseInt(userData.like) + parseInt(userData.affectNumber);
+      // 更新本地全部user資料中該user的資料
+      usersTotalData[post.author] = userData;
+      // TODO: 改成更新單一個user
+      uploadUserData(post.author, userData);
 
+    }
   }); 
 }
 
@@ -460,12 +483,13 @@ function addChangeSideLog(ratingScore){
   $('#currentScore').html(ratingScore);
 
   // 也幫被贊同/不贊同的user，增加一筆改變別人立場的紀錄
-  usersTotalData[tempLog.byWho].affectNumber = parseInt(usersTotalData[tempLog.byWho].affectNumber) + 1;
+  var userData = usersTotalData[tempLog.byWho];
+  userData.affectNumber = parseInt(userData.affectNumber) + 1;
+  // usersTotalData[tempLog.byWho].affectNumber = parseInt(usersTotalData[tempLog.byWho].affectNumber) + 1;
   // 該user的總分(改變別人立場+讚數)加一
-  usersTotalData[tempLog.byWho].totalScore = parseInt(usersTotalData[tempLog.byWho].totalScore) + 1;
-  console.log(usersTotalData[tempLog.byWho].affectNumber);
-  console.log(usersTotalData[tempLog.byWho].totalScore);
-  uploadUsersTotalData();
+  userData.totalScore = parseInt(userData.totalScore) + 1;
+  // usersTotalData[tempLog.byWho].totalScore = parseInt(usersTotalData[tempLog.byWho].totalScore) + 1;
+  uploadUserData(tempLog.byWho, userData);
 }
 
 function mergeAllUsers(){
@@ -481,7 +505,7 @@ function mergeAllUsers(){
 }
 
 function splitAllUsers(){
-  var THRESHOLD = 15;
+  var THRESHOLD = 3;
   var section;
   firebase.database().ref("/users/").once("value", function(snapshot) {
     snapshot.forEach(function(child) {
@@ -489,7 +513,7 @@ function splitAllUsers(){
         section = 'A';
       else if(child.val().currentScore < THRESHOLD)
         section = 'B';
-      else if(child.val().currentScore < THRESHOLD){
+      else if(child.val().currentScore == THRESHOLD){
         Math.floor(Math.random() * 2)? section = 'A' : section = 'B';
       }else{
         section = 'C';
